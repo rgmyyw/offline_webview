@@ -1,28 +1,28 @@
 # offline_webview
 
-一款轻量级高性能的 Flutter 离线 Web 包 SDK。
+A lightweight high-performance Flutter SDK for offline web package loading.
 
-## 特性
+## Features
 
-- **离线包管理**：下载、缓存本地 Web 资源并提供服务
-- **URL 匹配**：灵活的基于规则的 URL 到 bisName 匹配
-- **Flow 流程管道**：可扩展的职责链处理流程
-- **WebView 集成**：无缝集成 WKWebView (iOS) / WebView (Android)
-- **监控与上报**：内置日志、监控和数据上报功能
+- **Offline Package Management**: Download, cache, and serve web resources locally
+- **URL Matching**: Flexible rule-based URL to bisName matching
+- **Flow Pipeline**: Extensible chain-of-responsibility processing pipeline
+- **WebView Integration**: Seamless WKWebView (iOS) / WebView (Android) integration
+- **Monitoring & Reporting**: Built-in logging, monitoring, and data reporting
 
-## 安装
+## Installation
 
 ```yaml
 dependencies:
   offline_webview: ^1.0.0
 ```
 
-## 快速开始
+## Quick Start
 
 ```dart
 import 'package:offline_webview/offline_webview.dart';
 
-// 配置 SDK
+// Configure the SDK
 final params = OfflineParams()
     .config(OfflineConfigBuilder().isOpen(true).build())
     .isDebug(true)
@@ -31,26 +31,26 @@ final params = OfflineParams()
     .monitorBlock((type, data) => print('Monitor: $type'))
     .requestServer(YourCustomRequest());
 
-// 初始化
+// Initialize
 await OfflineWebClient.init(params);
 
-// 在应用中使用
+// Use in your app
 OfflineWebView(bisName: 'your-bis-name', url: 'https://example.com/page');
 ```
 
-## 使用方法
+## Usage
 
-### 配置
+### Configuration
 
 ```dart
 final config = OfflineConfigBuilder()
-    .isOpen(true)                      // 开启/关闭离线功能
-    .addPreDownload('bis-name-1')      // 预下载包
+    .isOpen(true)                      // Enable/disable offline feature
+    .addPreDownload('bis-name-1')      // Pre-download packages
     .addPreDownload('bis-name-2')
     .build();
 ```
 
-### 自定义请求实现
+### Custom Request Implementation
 
 ```dart
 class MyRequest implements IOfflineRequest {
@@ -60,14 +60,14 @@ class MyRequest implements IOfflineRequest {
     String version,
     RequestCallback<OfflinePackageInfo> callback,
   ) async {
-    // 实现你自己的服务器查询逻辑
+    // Implement your server query logic
     final result = await fetchFromServer(bisName, version);
     callback.onSuccess(result);
   }
 }
 ```
 
-### URL 匹配规则
+### URL Matching Rules
 
 ```dart
 final rules = OfflineRuleConfig(
@@ -77,32 +77,32 @@ final rules = OfflineRuleConfig(
 );
 ```
 
-## 架构
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    OfflineWebClient                      │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                   OfflineWebManager                      │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│               ResourceFlow Pipeline                      │
-│  FetchPackageFlow → DownloadFlow → ParsePackageFlow     │
-│                                   → ReplaceResFlow      │
-└─────────────────────────────────────────────────────────┘
++-------------------------------------------------------------+
+|                     OfflineWebClient                         |
++-------------------------------------------------------------+
+                            |
+                            v
++-------------------------------------------------------------+
+|                    OfflineWebManager                         |
++-------------------------------------------------------------+
+                            |
+                            v
++-------------------------------------------------------------+
+|                ResourceFlow Pipeline                         |
+|  FetchPackageFlow -> DownloadFlow -> ParsePackageFlow        |
+|                                    -> ReplaceResFlow         |
++-------------------------------------------------------------+
 ```
 
-## 平台支持
+## Platform Support
 
 - iOS (WKWebView)
 - Android (WebView)
 - Flutter Web
 
-## 许可证
+## License
 
-MIT License - 见 [LICENSE](LICENSE) 文件
+MIT License - see [LICENSE](LICENSE) file

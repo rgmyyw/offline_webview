@@ -54,7 +54,7 @@ class OfflineWebManager {
 
   // --- 状态 ---
   bool _isInit = false;
-  bool _disableFlag = false;
+  final bool _disableFlag = false;
   final Set<String> _disableBisList = {};
 
   // --- 管理器 ---

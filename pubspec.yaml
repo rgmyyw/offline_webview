@@ -1,5 +1,9 @@
 name: offline_webview
-description: 一款轻量级高性能的 Flutter 离线 Web 包 SDK。
+description: >
+  A lightweight high-performance Flutter SDK for offline web package loading.
+  Features: offline package management, URL matching, flow pipeline,
+  WebView integration, monitoring and reporting.
+  Supports iOS WKWebView and Android WebView.
 homepage: https://github.com/rgmyyw/offline_webview
 version: 1.0.0
 

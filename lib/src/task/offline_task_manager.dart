@@ -166,7 +166,7 @@ class _TaskFlowListener implements FlowListener {
   final String bisName;
   final Set<String> runningFlows;
   final FlowListener? innerListener;
-  FlowReportParams? _flowParams;
+  final FlowReportParams? _flowParams;
 
   _TaskFlowListener({
     required this.bisName,
