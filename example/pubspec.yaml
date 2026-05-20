@@ -1,0 +1,28 @@
+name: offline_webview_example
+description: Demo app for offline_webview package
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.41.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  offline_webview:
+    path: ../
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+  http: ^1.6.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/packages.json
+    - assets/offline-packages/test-package.zip

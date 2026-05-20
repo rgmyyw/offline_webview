@@ -1,0 +1,27 @@
+# FVM Version Cache
+.fvm/
+
+# Dart
+.dart_tool/
+.packages
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+
+# iOS
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# Android
+*.apk
+*.aab
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies

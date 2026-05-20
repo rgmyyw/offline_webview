@@ -1,0 +1,23 @@
+name: offline_webview
+description: 一款轻量级高性能的 Flutter 离线 Web 包 SDK。
+publish_to: 'https://pub-web.flutter-io.cn/'
+version: 1.0.0
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.41.9"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  archive: ^4.0.9
+  http: ^1.6.0
+  flutter_inappwebview: ^6.1.5
+  mime: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.24.0
