@@ -1,6 +1,6 @@
 name: offline_webview
 description: 一款轻量级高性能的 Flutter 离线 Web 包 SDK。
-publish_to: 'https://pub.dev'
+homepage: https://github.com/rgmyyw/offline_webview
 version: 1.0.0
 
 environment:
