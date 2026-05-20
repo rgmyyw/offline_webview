@@ -327,26 +327,27 @@ class _CustomUrlConfigPageState extends State<CustomUrlConfigPage> {
   Future<void> _viewScreenshot(BuildContext context) async {
     final bisName = _bisNameController.text.trim();
     if (bisName.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请先填写 bisName')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先填写 bisName')),
+      );
       return;
     }
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
     final appDir = await getApplicationDocumentsDirectory();
     final file = File(
       p.join(appDir.path, 'offline_web', bisName, 'cur', 'screenshot.png'),
     );
     if (!file.existsSync()) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('截图不存在: ${file.path}')));
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('截图不存在: ${file.path}')),
+      );
       return;
     }
     final bytes = file.readAsBytesSync();
     if (!mounted) return;
-    Navigator.push(
-      context,
+    navigator.push(
       MaterialPageRoute(
         builder: (_) => _ScreenshotViewer(bytes: bytes, path: file.path),
       ),

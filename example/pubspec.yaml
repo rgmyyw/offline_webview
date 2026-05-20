@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
   offline_webview:
     path: ../
+  flutter_inappwebview: ^6.1.5
   shelf: ^1.4.0
   shelf_router: ^1.1.0
   http: ^1.6.0
