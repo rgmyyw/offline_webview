@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2025-05-20
+
+- Refactor: unify to Python server, remove Dart local_server
+- Python server auto-scans packages/ directory and reads version from .offweb.json
+- Update port from 8199 to 18730
+
 ## [1.0.1] - 2024-05-20
 
 - Improved pub.dev score with English description and README
