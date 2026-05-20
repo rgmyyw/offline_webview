@@ -5,14 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
 import 'config.dart';
-import 'local_server.dart';
 import 'pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 启动本地服务器并等待其就绪
-  await startLocalServer();
 
   // 构建带预下载的配置
   final config = OfflineConfigBuilder()
@@ -41,7 +37,7 @@ void main() async {
   runApp(const DemoApp());
 }
 
-/// 自定义的 IOfflineRequest 实现，调用本地服务器.
+/// 自定义的 IOfflineRequest 实现，调用 Python 服务.
 class LocalServerRequest extends IOfflineRequest {
   @override
   void requestPackageInfo(

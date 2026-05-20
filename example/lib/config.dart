@@ -3,11 +3,11 @@ class AppConfig {
   /// 用于测试的业务名称。
   static const String testBisName = 'test-offline-package';
 
-  /// 客户端连接的本地服务器主机。
+  /// 离线包服务器主机（Python 服务）。
   static const String serverHost = 'localhost';
 
-  /// 本地服务器端口。
-  static const int serverPort = 8199;
+  ///  服务端口。
+  static const int serverPort = 18730;
 
   /// 查询离线包更新的端点。
   static String get queryUrl => 'http://$serverHost:$serverPort/offweb';
@@ -15,6 +15,6 @@ class AppConfig {
   /// 下载包 zip 的端点。
   static String get packageUrl => 'http://$serverHost:$serverPort/package';
 
-  /// 本地服务器的完整基础 URL。
+  /// 服务器基础 URL。
   static String get baseUrl => 'http://$serverHost:$serverPort';
 }

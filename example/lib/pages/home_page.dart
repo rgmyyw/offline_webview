@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final demos = <Map<String, dynamic>>[
       {
-        'title': '离线加载 - http://localhost:8199/demo',
+        'title': '离线加载',
         'subtitle': 'URL中包含offweb参数,直接加载离线包',
         'page': const SimpleDemoPage(),
       },

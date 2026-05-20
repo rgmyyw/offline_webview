@@ -22,7 +22,7 @@ class CustomUrlConfigPage extends StatefulWidget {
 
 class _CustomUrlConfigPageState extends State<CustomUrlConfigPage> {
   final _serverUrlController = TextEditingController(
-    text: 'http://192.168.1.62:9999',
+    text: AppConfig.baseUrl,
   );
   final _visitUrlController = TextEditingController(
     text: 'https://www.baidu.com?offweb=academy',
