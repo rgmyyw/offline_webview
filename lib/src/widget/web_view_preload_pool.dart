@@ -80,7 +80,7 @@ class WebViewPreloadPool {
   static WebViewPreloadPool get instance => _instance;
   WebViewPreloadPool._();
 
-  /// bisName → GlobalKey<PreloadedWebViewState>
+  /// bisName to GlobalKey mapping for preloaded WebView states
   final Map<String, GlobalKey<PreloadedWebViewState>> _entries = {};
 
   /// 注册一个预加载 WebView。
