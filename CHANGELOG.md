@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.3] - 2025-05-20
+
+- Fix: shorten pubspec description and fix doc comment for pub.dev score
+
 ## [1.0.2] - 2025-05-20
 
 - Refactor: unify to Python server, remove Dart local_server
