@@ -1,10 +1,108 @@
 # offline_webview_example
 
+---
+
+## English
+
+Demo app for offline_webview package.
+
+## Features
+
+| Page | Description |
+|------|-------------|
+| Offline Loading Demo | Basic offline package loading with offweb parameter |
+| Rule Matching Demo | Auto-match URLs and inject offweb parameter |
+| Debug Tool | View and manage locally cached offline packages |
+| Server Debug | Test if server endpoints work correctly |
+| Custom URL | Custom offline package download and access URL |
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
+cd example
+flutter pub get
+```
+
+### 2. Run the demo
+
+```bash
+flutter run
+```
+
+### 3. Start local server (optional)
+
+The demo app includes a built-in HTTP server for testing. It starts automatically when the app runs.
+
+Local server port: `8199`
+
+## Project Structure
+
+```
+lib/
+├── main.dart                      # App entry, starts local server
+├── config.dart                    # Config constants (bisName, server address)
+├── local_server.dart              # Local test server implementation
+├── pages/
+│   ├── home_page.dart             # Home page with all demo entries
+│   ├── simple_demo_page.dart      # Simple offline loading demo
+│   ├── full_demo_page.dart        # Rule matching demo
+│   ├── dev_tool_page.dart         # Debug tool page
+│   ├── server_debug_page.dart     # Server debug page
+│   └── custom_url_config_page.dart # Custom URL demo
+└── widgets/
+    └── *.dart                      # Shared widgets
+
+assets/
+├── packages.json                  # Offline package metadata config
+└── offline-packages/              # Offline package zip files
+```
+
+## Configuration
+
+Modify in `lib/config.dart`:
+
+```dart
+class AppConfig {
+  /// Business name, the identifier of the offline package
+  static const String testBisName = 'test-offline-package';
+
+  /// Local server port
+  static const int serverPort = 8199;
+}
+```
+
+## Add a New Offline Package
+
+1. Put the offline package zip file into `assets/offline-packages/`
+2. Update `assets/packages.json` with package info
+3. Modify `testBisName` in `lib/config.dart`
+
+## packages.json Format
+
+```json
+[
+  {
+    "bisName": "test-offline-package",
+    "version": "1.0.0",
+    "packageUrl": "http://localhost:8199/package?bisName=test-offline-package"
+  }
+]
+```
+
+## Help
+
+- [offline_webview documentation](../README.md)
+- [Flutter documentation](https://docs.flutter.dev/)
+
+---
+
+## 中文
+
 离线 Web 包的示例应用。
 
 ## 功能演示
-
-本示例应用包含以下功能演示：
 
 | 页面 | 说明 |
 |------|------|
@@ -47,7 +145,7 @@ lib/
 │   ├── simple_demo_page.dart      # 简单离线加载演示
 │   ├── full_demo_page.dart        # 规则匹配演示
 │   ├── dev_tool_page.dart         # 调试工具页面
-│   ├── server_debug_page.dart      # 服务调试页面
+│   ├── server_debug_page.dart     # 服务调试页面
 │   └── custom_url_config_page.dart # 自定义地址演示
 └── widgets/
     └── *.dart                      # 共用组件

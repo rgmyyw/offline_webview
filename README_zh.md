@@ -1,32 +1,32 @@
-[简体中文](README_zh.md) | **English**
+[**English** | 简体中文](README.md)
 
 ---
 
 # offline_webview
 
-A lightweight high-performance Flutter SDK for offline web package loading.
+一款轻量级高性能的 Flutter 离线 Web 包 SDK。
 
-## Features
+## 特性
 
-- **Offline Package Management**: Download, cache, and serve web resources locally
-- **URL Matching**: Flexible rule-based URL to bisName matching
-- **Flow Pipeline**: Extensible chain-of-responsibility processing pipeline
-- **WebView Integration**: Seamless WKWebView (iOS) / WebView (Android) integration
-- **Monitoring & Reporting**: Built-in logging, monitoring, and data reporting
+- **离线包管理**：下载、缓存本地 Web 资源并提供服务
+- **URL 匹配**：灵活的基于规则的 URL 到 bisName 匹配
+- **Flow 流程管道**：可扩展的职责链处理流程
+- **WebView 集成**：无缝集成 WKWebView (iOS) / WebView (Android)
+- **监控与上报**：内置日志、监控和数据上报功能
 
-## Installation
+## 安装
 
 ```yaml
 dependencies:
   offline_webview: ^1.0.0
 ```
 
-## Quick Start
+## 快速开始
 
 ```dart
 import 'package:offline_webview/offline_webview.dart';
 
-// Configure the SDK
+// 配置 SDK
 final params = OfflineParams()
     .config(OfflineConfigBuilder().isOpen(true).build())
     .isDebug(true)
@@ -35,26 +35,26 @@ final params = OfflineParams()
     .monitorBlock((type, data) => print('Monitor: $type'))
     .requestServer(YourCustomRequest());
 
-// Initialize
+// 初始化
 await OfflineWebClient.init(params);
 
-// Use in your app
+// 在应用中使用
 OfflineWebView(bisName: 'your-bis-name', url: 'https://example.com/page');
 ```
 
-## Usage
+## 使用方法
 
-### Configuration
+### 配置
 
 ```dart
 final config = OfflineConfigBuilder()
-    .isOpen(true)                      // Enable/disable offline feature
-    .addPreDownload('bis-name-1')      // Pre-download packages
+    .isOpen(true)                      // 开启/关闭离线功能
+    .addPreDownload('bis-name-1')      // 预下载包
     .addPreDownload('bis-name-2')
     .build();
 ```
 
-### Custom Request Implementation
+### 自定义请求实现
 
 ```dart
 class MyRequest implements IOfflineRequest {
@@ -64,14 +64,14 @@ class MyRequest implements IOfflineRequest {
     String version,
     RequestCallback<OfflinePackageInfo> callback,
   ) async {
-    // Implement your server query logic
+    // 实现你自己的服务器查询逻辑
     final result = await fetchFromServer(bisName, version);
     callback.onSuccess(result);
   }
 }
 ```
 
-### URL Matching Rules
+### URL 匹配规则
 
 ```dart
 final rules = OfflineRuleConfig(
@@ -81,7 +81,7 @@ final rules = OfflineRuleConfig(
 );
 ```
 
-## Architecture
+## 架构
 
 ```
 +-------------------------------------------------------------+
@@ -101,12 +101,12 @@ final rules = OfflineRuleConfig(
 +-------------------------------------------------------------+
 ```
 
-## Platform Support
+## 平台支持
 
 - iOS (WKWebView)
 - Android (WebView)
 - Flutter Web
 
-## License
+## 许可证
 
-MIT License - see [LICENSE](LICENSE) file
+MIT License - 见 [LICENSE](LICENSE) 文件
