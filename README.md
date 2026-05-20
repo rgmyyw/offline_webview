@@ -23,6 +23,13 @@ dependencies:
 
 ## Quick Start
 
+```bash
+# 1. Start the Python server (from the SDK root)
+cd tool
+python3 server.py
+# Server runs at http://localhost:18730
+```
+
 ```dart
 import 'package:offline_webview/offline_webview.dart';
 
@@ -41,6 +48,23 @@ await OfflineWebClient.init(params);
 // Use in your app
 OfflineWebView(bisName: 'your-bis-name', url: 'https://example.com/page');
 ```
+
+## Local Development Server
+
+For local testing, a Python HTTP server is provided:
+
+```bash
+cd tool
+python3 server.py
+```
+
+Place offline packages in `tool/packages/`. The server automatically scans and loads package info from `.offweb.json` inside each zip.
+
+**Server endpoints:**
+- `GET /offweb?bisName=xxx&offlineZipVer=xxx` - Query package update
+- `GET /package?bisName=xxx` - Download package zip
+- `GET /demo` - Demo HTML page
+- `GET /health` - Health check
 
 ## Usage
 

@@ -23,6 +23,13 @@ dependencies:
 
 ## 快速开始
 
+```bash
+# 1. 启动 Python 服务器（在 SDK 根目录）
+cd tool
+python3 server.py
+# 服务器运行在 http://localhost:18730
+```
+
 ```dart
 import 'package:offline_webview/offline_webview.dart';
 
@@ -41,6 +48,23 @@ await OfflineWebClient.init(params);
 // 在应用中使用
 OfflineWebView(bisName: 'your-bis-name', url: 'https://example.com/page');
 ```
+
+## 本地开发服务器
+
+本地测试提供了 Python HTTP 服务器：
+
+```bash
+cd tool
+python3 server.py
+```
+
+将离线包放在 `tool/packages/` 目录下。服务器会自动扫描并从 zip 包内的 `.offweb.json` 读取包信息。
+
+**服务器端点：**
+- `GET /offweb?bisName=xxx&offlineZipVer=xxx` - 查询离线包更新
+- `GET /package?bisName=xxx` - 下载离线包 zip
+- `GET /demo` - 演示 HTML 页面
+- `GET /health` - 健康检查
 
 ## 使用方法
 
