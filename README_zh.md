@@ -18,7 +18,7 @@
 
 ```yaml
 dependencies:
-  offline_webview: ^1.0.0
+  offline_webview: ^1.0.3
 ```
 
 ## 快速开始

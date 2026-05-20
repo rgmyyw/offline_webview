@@ -18,7 +18,7 @@ A lightweight high-performance Flutter SDK for offline web package loading.
 
 ```yaml
 dependencies:
-  offline_webview: ^1.0.0
+  offline_webview: ^1.0.3
 ```
 
 ## Quick Start
