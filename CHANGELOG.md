@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 2025-05-20
+
+- Docs: add Python server setup, endpoints, and IOfflineRequest implementation example
+
 ## [1.0.3] - 2025-05-20
 
 - Fix: shorten pubspec description and fix doc comment for pub.dev score
