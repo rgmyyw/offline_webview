@@ -80,6 +80,8 @@ final config = OfflineConfigBuilder()
 
 ### 自定义请求实现
 
+需要实现 `IOfflineRequest` 来查询服务器的离线包更新：
+
 ```dart
 class MyRequest implements IOfflineRequest {
   @override
@@ -88,11 +90,24 @@ class MyRequest implements IOfflineRequest {
     String version,
     RequestCallback<OfflinePackageInfo> callback,
   ) async {
-    // 实现你自己的服务器查询逻辑
-    final result = await fetchFromServer(bisName, version);
-    callback.onSuccess(result);
+    final url = Uri.parse('http://localhost:18730/offweb').replace(
+      queryParameters: {'bisName': bisName, 'offlineZipVer': version},
+    );
+    final response = await http.get(url);
+    final json = jsonDecode(response.body);
+    callback.onSuccess(OfflinePackageInfo.fromJson(json));
   }
 }
+```
+
+然后配置 SDK：
+
+```dart
+final params = OfflineParams()
+    .config(OfflineConfigBuilder().isOpen(true).build())
+    .requestServer(MyRequest());
+
+await OfflineWebClient.init(params);
 ```
 
 ### URL 匹配规则

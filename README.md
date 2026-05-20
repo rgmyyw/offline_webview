@@ -80,6 +80,8 @@ final config = OfflineConfigBuilder()
 
 ### Custom Request Implementation
 
+You need to implement `IOfflineRequest` to query your server for package updates:
+
 ```dart
 class MyRequest implements IOfflineRequest {
   @override
@@ -88,11 +90,24 @@ class MyRequest implements IOfflineRequest {
     String version,
     RequestCallback<OfflinePackageInfo> callback,
   ) async {
-    // Implement your server query logic
-    final result = await fetchFromServer(bisName, version);
-    callback.onSuccess(result);
+    final url = Uri.parse('http://localhost:18730/offweb').replace(
+      queryParameters: {'bisName': bisName, 'offlineZipVer': version},
+    );
+    final response = await http.get(url);
+    final json = jsonDecode(response.body);
+    callback.onSuccess(OfflinePackageInfo.fromJson(json));
   }
 }
+```
+
+Then configure the SDK:
+
+```dart
+final params = OfflineParams()
+    .config(OfflineConfigBuilder().isOpen(true).build())
+    .requestServer(MyRequest());
+
+await OfflineWebClient.init(params);
 ```
 
 ### URL Matching Rules
