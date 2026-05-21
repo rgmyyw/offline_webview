@@ -7,21 +7,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:offline_webview/offline_webview.dart';
 import 'package:path/path.dart' as p;
 
-import '../core/offline_const.dart';
-import '../core/offline_web_manager.dart';
-import '../match/default_matcher.dart';
-import '../monitor/performance_monitor.dart';
-import '../monitor/loading_timeline.dart';
-import '../server/local_server.dart';
-import '../util/file_mgr.dart';
-import '../match/off_web_rule_util.dart';
-import '../monitor/data_report.dart';
-import '../proxy/offline_web_view_proxy.dart';
-import '../proxy/offline_web_view_proxy_factory.dart';
-import '../util/html_cache.dart';
-import '../util/off_web_log.dart';
-import 'offline_web_view_controller.dart';
-
 /// 包装[InAppWebView]以提供离线Web支持的StatefulWidget。
 ///
 /// 离线包通过 [LocalServer] 提供的 HTTP localhost URL 加载，

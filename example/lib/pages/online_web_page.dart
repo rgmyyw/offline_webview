@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// 普通 WebView 页面，用于与离线加载进行速度对比.
 /// 此页面直接加载 URL，不使用离线包拦截.
 class OnlineWebPage extends StatefulWidget {
@@ -38,9 +40,10 @@ class _OnlineWebPageState extends State<OnlineWebPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('网络加载'),
+        title: Text(l10n.networkLoading),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

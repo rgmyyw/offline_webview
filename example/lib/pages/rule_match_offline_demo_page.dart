@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 
 /// 完整演示页面：演示基于规则的 URL 匹配.
@@ -17,9 +19,10 @@ class RuleMatchOfflineDemoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('规则匹配模式'),
+        title: Text(l10n.ruleMatchDemo),
       ),
       body: FloatingPerformancePanel(
         child: OfflineWebView(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// 配置查看面板
 ///
 /// 显示当前 SDK 初始化配置（env、appVersion 等）和规则配置详情。
@@ -53,14 +55,15 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('配置查看'),
+        title: Text(l10n.configInfo),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadConfig,
-            tooltip: '刷新',
+            tooltip: l10n.refresh,
           ),
         ],
       ),
@@ -71,7 +74,7 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
               children: [
                 // 基础配置
                 _buildSection(
-                  title: '基础配置',
+                  title: l10n.basicConfig,
                   icon: Icons.settings,
                   children: _configInfo.entries
                       .map((e) => _ConfigRow(configKey: e.key, value: e.value))
@@ -82,15 +85,15 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
 
                 // 规则配置
                 _buildSection(
-                  title: '规则配置',
+                  title: l10n.ruleConfig,
                   icon: Icons.rule,
                   children: [
                     if (_ruleConfig.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.all(16),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
                         child: Text(
-                          '暂无规则配置',
-                          style: TextStyle(color: Colors.grey),
+                          l10n.noRuleConfig,
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       )
                     else
@@ -102,12 +105,12 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
 
                 // SDK 状态
                 _buildSection(
-                  title: 'SDK 状态',
+                  title: l10n.sdkStatus,
                   icon: Icons.info,
                   children: [
                     _StatusRow(
-                      label: '初始化状态',
-                      value: _configInfo['isInit'] == 'true' ? '已初始化' : '未初始化',
+                      label: l10n.initStatus,
+                      value: _configInfo['isInit'] == 'true' ? l10n.initialized : l10n.notInitialized,
                       isOk: _configInfo['isInit'] == 'true',
                     ),
                     _StatusRow(
@@ -116,8 +119,8 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
                       isOk: true,
                     ),
                     _StatusRow(
-                      label: 'Request',
-                      value: _configInfo['hasRequest'] == 'true' ? '已配置' : '未配置',
+                      label: l10n.request,
+                      value: _configInfo['hasRequest'] == 'true' ? l10n.configured : l10n.notConfigured,
                       isOk: _configInfo['hasRequest'] == 'true',
                     ),
                   ],

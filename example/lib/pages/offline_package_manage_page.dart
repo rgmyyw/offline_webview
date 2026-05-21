@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// 离线包管理页面
 ///
 /// 展示和管理所有缓存的离线包，支持刷新、删除单个、删除全部等操作。
@@ -51,27 +53,29 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
         setState(() {
           _loading = false;
         });
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('刷新失败: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.loadFailed(e.toString()))));
       }
     }
   }
 
   Future<void> _deleteItem(String bisName) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text('确定要删除 "$bisName" 的离线缓存吗？'),
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeletePackageCache(bisName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -81,7 +85,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
       final success = await OfflinePackage.deleteDiskCache(bisName);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(success ? '已删除 $bisName' : '删除失败')),
+          SnackBar(content: Text(success ? l10n.deleted(bisName) : l10n.deleteFailed)),
         );
         _refresh();
       }
@@ -89,19 +93,20 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
   }
 
   Future<void> _deleteAll() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('确认清空'),
-        content: const Text('确定要删除所有离线缓存吗？此操作不可恢复。'),
+        title: Text(l10n.confirmClearAll),
+        content: Text(l10n.confirmDeleteAllCache),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('全部删除'),
+            child: Text(l10n.deleteAll),
           ),
         ],
       ),
@@ -112,7 +117,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(success ? '已清空所有缓存' : '清空失败')));
+        ).showSnackBar(SnackBar(content: Text(success ? l10n.clearedAllCache : l10n.clearFailed)));
         _refresh();
       }
     }
@@ -131,15 +136,16 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('离线包管理'),
+        title: Text(l10n.packageManagement),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
             color: Colors.red,
             onPressed: _deleteAll,
-            tooltip: '一键清理所有包',
+            tooltip: l10n.deleteAll,
           ),
         ],
       ),
@@ -153,7 +159,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                   Icon(Icons.folder_off, size: 80, color: Colors.grey.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    '暂无离线包数据',
+                    l10n.noOfflinePackageData,
                     style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
                   ),
                 ],
@@ -170,7 +176,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                     children: [
                       Expanded(
                         child: _StatCard(
-                          label: '离线包数量',
+                          label: l10n.offlinePackageCount,
                           value: '${_items.length}',
                           icon: Icons.folder,
                           color: Colors.blue,
@@ -179,7 +185,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _StatCard(
-                          label: '总大小',
+                          label: l10n.totalSize,
                           value: _totalSizeDisplay,
                           icon: Icons.storage,
                           color: Colors.green,
@@ -194,7 +200,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                   child: Row(
                     children: [
                       Text(
-                        '离线包列表',
+                        l10n.offlinePackageList,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade700,
@@ -202,7 +208,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                       ),
                       const Spacer(),
                       Text(
-                        '${_items.length} 个包',
+                        l10n.packagesCount(_items.length),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade500,
@@ -221,6 +227,7 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
                       return _PackageCard(
                         bisInfo: item,
                         onDelete: () => _deleteItem(item.bisName),
+                        l10n: l10n,
                       );
                     },
                   ),
@@ -290,8 +297,9 @@ class _StatCard extends StatelessWidget {
 class _PackageCard extends StatelessWidget {
   final _BisInfo bisInfo;
   final VoidCallback onDelete;
+  final AppLocalizations l10n;
 
-  const _PackageCard({required this.bisInfo, required this.onDelete});
+  const _PackageCard({required this.bisInfo, required this.onDelete, required this.l10n});
 
   @override
   Widget build(BuildContext context) {

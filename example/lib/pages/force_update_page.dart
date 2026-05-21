@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// 强制更新检查页面
 ///
 /// 对指定 bisName 强制触发更新检查，显示更新过程和结果。
@@ -22,7 +24,8 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
   @override
   void initState() {
     super.initState();
-    _addLog('就绪，请输入 bisName 并点击开始', isInfo: true);
+    final l10n = AppLocalizations.of(context)!;
+    _addLog(l10n.readyEnterBisNameClickStart, isInfo: true);
     _loadAvailableBisNames();
   }
 
@@ -50,11 +53,12 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
   }
 
   Future<void> _startUpdate() async {
+    final l10n = AppLocalizations.of(context)!;
     final bisName = _bisNameController.text.trim();
     if (bisName.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请输入 bisName')));
+      ).showSnackBar(SnackBar(content: Text(l10n.enterBisName)));
       return;
     }
 
@@ -63,32 +67,32 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
       _logs.clear();
     });
 
-    _addLog('开始更新检查: $bisName', isInfo: true);
+    _addLog(l10n.startUpdateCheck(bisName), isInfo: true);
 
     try {
       // 获取当前本地版本
       final localVersion = await FileMgr.getCurVersion(bisName);
-      _addLog('本地版本: $localVersion');
+      _addLog(l10n.localVersion(localVersion));
 
       // 触发更新检查
-      _addLog('正在请求服务器...');
+      _addLog(l10n.requestingServer);
       final manager = OfflineWebManager.instance;
       final request = manager.request;
 
       if (request == null) {
-        _addLog('未配置 IOfflineRequest，无法请求服务器', isError: true);
+        _addLog(l10n.notConfiguredOfflineRequest, isError: true);
         setState(() => _isUpdating = false);
         return;
       }
 
       // 使用 request 请求更新
       await Future.delayed(const Duration(milliseconds: 100));
-      _addLog('已触发 checkPackage');
+      _addLog(l10n.triggeredCheckPackage);
 
       // 调用 checkPackage 触发更新流程
       manager.checkPackage(bisName, null);
 
-      _addLog('更新任务已提交，请查看日志了解进度');
+      _addLog(l10n.updateTaskSubmitted);
 
       // 等待一段时间后检查结果
       await Future.delayed(const Duration(seconds: 2));
@@ -96,15 +100,15 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
       // 检查新版本是否出现
       final newVersion = await FileMgr.getNewVersion(bisName);
       if (newVersion.isNotEmpty) {
-        _addLog('发现新版本: $newVersion', isInfo: true);
+        _addLog(l10n.foundNewVersion(newVersion), isInfo: true);
       }
 
       final curVersion = await FileMgr.getCurVersion(bisName);
-      _addLog('当前版本: $curVersion');
-      _addLog('更新检查完成', isInfo: true);
+      _addLog(l10n.currentVersion(curVersion));
+      _addLog(l10n.updateCheckComplete, isInfo: true);
     } catch (e) {
       Logger.e('ForceUpdatePage', '更新失败: $e');
-      _addLog('更新失败: $e', isError: true);
+      _addLog(l10n.updateFailed(e.toString()), isError: true);
     } finally {
       setState(() => _isUpdating = false);
     }
@@ -112,14 +116,15 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('强制更新检查'),
+        title: Text(l10n.forceUpdateCheck),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => setState(() => _logs.clear()),
-            tooltip: '清空日志',
+            tooltip: l10n.clearLogs,
           ),
         ],
       ),
@@ -134,10 +139,10 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
                 Expanded(
                   child: TextField(
                     controller: _bisNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'bisName',
-                      hintText: '例如: act3-2108',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.bisNameLabel,
+                      hintText: l10n.exampleBisName,
+                      border: const OutlineInputBorder(),
                     ),
                     enabled: !_isUpdating,
                   ),
@@ -154,7 +159,7 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('开始'),
+                      : Text(l10n.start),
                 ),
               ],
             ),
@@ -168,13 +173,13 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  '可用离线包:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.availableOfflinePackages,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 if (_availableBisNames.isEmpty)
-                  Text('暂无离线包数据', style: TextStyle(color: Colors.grey.shade500))
+                  Text(l10n.noOfflinePackageDataSmall, style: TextStyle(color: Colors.grey.shade500))
                 else
                   Wrap(
                     spacing: 8,
@@ -203,13 +208,13 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
                   color: Theme.of(context).primaryColor,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '更新日志',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  l10n.updateLogs,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const Spacer(),
                 Text(
-                  '${_logs.length} 条',
+                  l10n.logCount(_logs.length),
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -229,12 +234,12 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
                 border: Border.all(color: Colors.grey.shade800, width: 1),
               ),
               child: _logs.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        '点击开始按钮进行更新检查...',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    )
+                      l10n.clickStartButtonForUpdateCheck,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  )
                   : ListView.builder(
                       reverse: true,
                       itemCount: _logs.length,

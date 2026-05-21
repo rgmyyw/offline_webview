@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 class OfflineWebPage extends StatelessWidget {
   final String visitUrl;
 
@@ -24,9 +26,10 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('离线包模式'),
+        title: Text(l10n.offlinePackageMode),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

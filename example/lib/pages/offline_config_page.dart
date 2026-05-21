@@ -8,6 +8,8 @@ import 'package:offline_webview/offline_webview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 import 'offline_web_page.dart';
 import 'online_web_page.dart';
@@ -53,12 +55,13 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
   }
 
   Future<void> _directNavigate() {
+    final l10n = AppLocalizations.of(context)!;
     final visitUrl = _visitUrlController.text.trim();
     final bisName = _bisNameController.text.trim();
 
     if (visitUrl.isEmpty || bisName.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请填写访问地址和 bisName')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillServerAndBisName)));
       return Future.value();
     }
 
@@ -73,10 +76,11 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
   }
 
   Future<void> _fetchPackages() async {
+    final l10n = AppLocalizations.of(context)!;
     final serverUrl = _serverUrlController.text.trim();
     if (serverUrl.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请先填写服务器地址')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillAccessAddress)));
       return;
     }
 
@@ -99,23 +103,23 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
 
         if (packages.isEmpty) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('未获取到可用离线包')));
+              .showSnackBar(SnackBar(content: Text(l10n.noOfflinePackageData)));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('获取到 ${packages.length} 个离线包: ${packages.join(", ")}'),
+              content: Text(l10n.fetchedPackagesCount(packages.length, packages.join(", "))),
             ),
           );
         }
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('请求失败: ${response.statusCode}')));
+            .showSnackBar(SnackBar(content: Text(l10n.requestFailed(response.statusCode))));
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('获取离线包失败: $e')));
+          .showSnackBar(SnackBar(content: Text(l10n.fetchOfflinePackageFailed(e.toString()))));
     } finally {
       if (mounted) {
         setState(() => _isFetchingPackages = false);
@@ -134,13 +138,14 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
   }
 
   Future<void> _startOfflineLoading() async {
+    final l10n = AppLocalizations.of(context)!;
     final serverUrl = _serverUrlController.text.trim();
     final visitUrl = _visitUrlController.text.trim();
     final bisName = _bisNameController.text.trim();
 
     if (serverUrl.isEmpty || visitUrl.isEmpty || bisName.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请填写所有字段')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillAllFields)));
       return;
     }
 
@@ -162,17 +167,18 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
       if (!mounted) return;
       Logger.e('CustomURL', '$e');
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('初始化失败: $e')));
+          .showSnackBar(SnackBar(content: Text(l10n.initFailed(e.toString()))));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _startNormalLoading() async {
+    final l10n = AppLocalizations.of(context)!;
     final visitUrl = _visitUrlController.text.trim();
     if (visitUrl.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请填写访问地址')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillAccessAddress)));
       return;
     }
 
@@ -193,9 +199,10 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('自定义配置'),
+        title: Text(l10n.customConfigPage),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -203,15 +210,15 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 服务器配置
-            _buildSectionHeader('服务器配置', Icons.cloud_download, Colors.blue),
+            _buildSectionHeader(l10n.serverConfig, Icons.cloud_download, Colors.blue),
             const SizedBox(height: 12),
             _buildInputCard(
               child: Column(
                 children: [
                   _buildTextField(
                     controller: _serverUrlController,
-                    label: '离线包服务地址',
-                    hint: '例: http://192.168.1.100:9999',
+                    label: l10n.offlinePackageServerAddress,
+                    hint: l10n.exampleServerAddress,
                     icon: Icons.dns,
                   ),
                   const SizedBox(height: 12),
@@ -227,12 +234,12 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2),
                             )
-                          : const Row(
+                          : Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.refresh, size: 18),
-                                SizedBox(width: 8),
-                                Text('获取离线包列表'),
+                                const SizedBox(width: 8),
+                                Text(l10n.getOfflinePackageList),
                               ],
                             ),
                     ),
@@ -240,17 +247,17 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
                   if (_availablePackages.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _selectedPackage,
-                      decoration: const InputDecoration(
-                        labelText: '选择离线包',
+                      initialValue: _selectedPackage,
+                      decoration: InputDecoration(
+                        labelText: l10n.selectOfflinePackage,
                         prefixIcon: Icon(Icons.inventory_2, size: 20),
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(
+                        border: const OutlineInputBorder(),
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 14,
                         ),
                       ),
-                      hint: const Text('请选择离线包'),
+                      hint: Text(l10n.pleaseSelectPackage),
                       items: _availablePackages
                           .map((pkg) => DropdownMenuItem(
                               value: pkg, child: Text(pkg)))
@@ -265,22 +272,22 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
             const SizedBox(height: 24),
 
             // 业务配置
-            _buildSectionHeader('业务配置', Icons.settings, Colors.purple),
+            _buildSectionHeader(l10n.businessConfig, Icons.settings, Colors.purple),
             const SizedBox(height: 12),
             _buildInputCard(
               child: Column(
                 children: [
                   _buildTextField(
                     controller: _bisNameController,
-                    label: '业务名称 (bisName)',
-                    hint: '例: package',
+                    label: l10n.businessName,
+                    hint: l10n.examplePackage,
                     icon: Icons.label,
                   ),
                   const SizedBox(height: 12),
                   _buildTextField(
                     controller: _visitUrlController,
-                    label: '访问地址',
-                    hint: '例: https://example.com?offweb=package',
+                    label: l10n.accessAddress,
+                    hint: l10n.exampleAccessAddress,
                     icon: Icons.link,
                   ),
                 ],
@@ -290,34 +297,34 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
             const SizedBox(height: 24),
 
             // 加载方式
-            _buildSectionHeader('加载方式', Icons.play_arrow, Colors.green),
+            _buildSectionHeader(l10n.loadingMethod, Icons.play_arrow, Colors.green),
             const SizedBox(height: 12),
             _buildActionCard(
               icon: Icons.offline_bolt,
-              title: '使用离线包加载',
-              description: '通过离线包加速 H5 页面加载',
+              title: l10n.useOfflinePackageLoading,
+              description: l10n.useOfflinePackageLoadingDesc,
               color: Colors.green,
-              buttonText: '启动',
+              buttonText: l10n.launch,
               isLoading: _isLoading,
               onPressed: _startOfflineLoading,
             ),
             const SizedBox(height: 12),
             _buildActionCard(
               icon: Icons.language,
-              title: '不使用离线包',
-              description: '直接加载在线页面（对照组）',
+              title: l10n.doNotUseOfflinePackage,
+              description: l10n.doNotUseOfflinePackageDesc,
               color: Colors.grey,
-              buttonText: '启动',
+              buttonText: l10n.launch,
               isLoading: _isLoading,
               onPressed: _startNormalLoading,
             ),
             const SizedBox(height: 12),
             _buildActionCard(
               icon: Icons.open_in_new,
-              title: '直接跳转',
-              description: '不预加载，直接打开页面',
+              title: l10n.directNavigate,
+              description: l10n.directNavigateDesc,
               color: Colors.blue,
-              buttonText: '跳转',
+              buttonText: l10n.navigate,
               isLoading: _isLoading,
               onPressed: _directNavigate,
             ),
@@ -325,14 +332,14 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
             const SizedBox(height: 24),
 
             // 工具
-            _buildSectionHeader('工具', Icons.build, Colors.orange),
+            _buildSectionHeader(l10n.tools, Icons.build, Colors.orange),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: _buildToolButton(
                     icon: Icons.image,
-                    label: '查看截图缓存',
+                    label: l10n.viewScreenshotCache,
                     color: Colors.blue,
                     onPressed: () => _viewScreenshot(context),
                   ),
@@ -341,7 +348,7 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
                 Expanded(
                   child: _buildToolButton(
                     icon: Icons.delete_outline,
-                    label: '清理离线包',
+                    label: l10n.cleanOfflinePackage,
                     color: Colors.red,
                     onPressed: _cleanOfflinePackage,
                   ),
@@ -475,25 +482,26 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
   }
 
   Future<void> _cleanOfflinePackage() async {
+    final l10n = AppLocalizations.of(context)!;
     final bisName = _bisNameController.text.trim();
     if (bisName.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请先填写 bisName')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillBisNameFirst)));
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('确认清理'),
-        content: Text('确定要清理 "$bisName" 的离线包缓存吗？'),
+        title: Text(l10n.confirmClean),
+        content: Text(l10n.confirmCleanPackageCache(bisName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('确定'),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
@@ -503,14 +511,15 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
     await OfflineWebManager.instance.cleanBisName(bisName);
     if (!mounted) return;
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('已清理 "$bisName" 离线包缓存')));
+        .showSnackBar(SnackBar(content: Text(l10n.cleanedPackageCache(bisName))));
   }
 
   Future<void> _viewScreenshot(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final bisName = _bisNameController.text.trim();
     if (bisName.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('请先填写 bisName')));
+          .showSnackBar(SnackBar(content: Text(l10n.pleaseFillBisNameFirst)));
       return;
     }
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -521,14 +530,14 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
     if (!file.existsSync()) {
       if (!mounted) return;
       scaffoldMessenger
-          .showSnackBar(SnackBar(content: Text('截图不存在: ${file.path}')));
+          .showSnackBar(SnackBar(content: Text(l10n.screenshotNotExists(file.path))));
       return;
     }
     final bytes = file.readAsBytesSync();
     if (!mounted) return;
     navigator.push(
       MaterialPageRoute(
-        builder: (_) => _ScreenshotViewer(bytes: bytes, path: file.path),
+        builder: (_) => _ScreenshotViewer(bytes: bytes, path: file.path, l10n: l10n),
       ),
     );
   }
@@ -588,21 +597,22 @@ class _LocalServerRequest extends IOfflineRequest {
 class _ScreenshotViewer extends StatelessWidget {
   final Uint8List bytes;
   final String path;
+  final AppLocalizations l10n;
 
-  const _ScreenshotViewer({required this.bytes, required this.path});
+  const _ScreenshotViewer({required this.bytes, required this.path, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('截图查看'),
+        title: Text(l10n.screenshotView),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8),
             child: Text(
-              '大小: ${bytes.length} 字节\n路径: $path',
+              l10n.sizeBytes(bytes.length, path),
               style: const TextStyle(fontSize: 12),
             ),
           ),
@@ -611,7 +621,7 @@ class _ScreenshotViewer extends StatelessWidget {
               child: Image.memory(
                 bytes,
                 fit: BoxFit.contain,
-                errorBuilder: (_, error, __) => Text('图片加载失败: $error'),
+                errorBuilder: (_, error, __) => Text(l10n.imageLoadFailed(error.toString())),
               ),
             ),
           ),

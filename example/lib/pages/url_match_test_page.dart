@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 /// URL 匹配测试器
 ///
 /// 输入任意 URL，测试会匹配到哪个 bisName，并展示匹配结果和规则信息。
@@ -26,6 +28,7 @@ class _UrlMatchTestPageState extends State<UrlMatchTestPage> {
   }
 
   Future<void> _testMatch() async {
+    final l10n = AppLocalizations.of(context)!;
     final url = _urlController.text.trim();
     if (url.isEmpty) return;
 
@@ -44,7 +47,7 @@ class _UrlMatchTestPageState extends State<UrlMatchTestPage> {
       final matchResult = matcher.matching(url);
 
       setState(() {
-        _matchResult = bisName ?? '未匹配到 bisName';
+        _matchResult = bisName ?? l10n.noMatchBisName;
         _ruleInfo = '''
 URL: $url
 
@@ -57,8 +60,8 @@ DefaultMatcher 结果: $matchResult
       });
     } catch (e) {
       setState(() {
-        _matchResult = '匹配失败';
-        _ruleInfo = '错误: $e';
+        _matchResult = l10n.matchFailed;
+        _ruleInfo = '${l10n.loadFailed}: $e';
       });
     } finally {
       setState(() => _isLoading = false);
@@ -67,9 +70,10 @@ DefaultMatcher 结果: $matchResult
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('URL 匹配测试'),
+        title: Text(l10n.urlMatchTest),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -83,15 +87,15 @@ DefaultMatcher 结果: $matchResult
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '输入 URL',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.inputUrl,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _urlController,
                       decoration: InputDecoration(
-                        hintText: '例如: https://m.example.com/act3/index.html',
+                        hintText: l10n.exampleUrlHint,
                         border: const OutlineInputBorder(),
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.clear),
@@ -114,7 +118,7 @@ DefaultMatcher 结果: $matchResult
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('测试匹配'),
+                            : Text(l10n.testMatch),
                       ),
                     ),
                   ],
@@ -125,9 +129,9 @@ DefaultMatcher 结果: $matchResult
             const SizedBox(height: 16),
 
             // 常用测试 URL
-            const Text(
-              '常用测试 URL',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Text(
+              l10n.commonTestUrls,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -156,9 +160,9 @@ DefaultMatcher 结果: $matchResult
 
             // 结果展示
             if (_matchResult != null) ...[
-              const Text(
-                '匹配结果',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text(
+                l10n.matchResult,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Card(

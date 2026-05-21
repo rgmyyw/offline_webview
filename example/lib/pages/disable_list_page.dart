@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 
 /// 禁用列表管理页面
@@ -74,6 +76,7 @@ class _DisableListPageState extends State<DisableListPage> {
   }
 
   Future<void> _addToDisableList() async {
+    final l10n = AppLocalizations.of(context)!;
     final bisName = _inputController.text.trim();
     if (bisName.isEmpty) return;
 
@@ -83,26 +86,27 @@ class _DisableListPageState extends State<DisableListPage> {
       await _loadDisableList();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已添加 "$bisName" 到禁用列表')),
+          SnackBar(content: Text(l10n.addedToDisableList(bisName))),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
+          SnackBar(content: Text(l10n.addFailed(e.toString()))),
         );
       }
     }
   }
 
   Future<void> _testDisable(String bisName) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final manager = OfflineWebManager.instance;
       final isDisabled = manager.isDisable(bisName);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('"$bisName" ${isDisabled ? "已被禁用" : "未被禁用"}'),
+            content: Text(isDisabled ? l10n.bisNameIsDisabled(bisName) : l10n.bisNameNotDisabled(bisName)),
             backgroundColor: isDisabled ? Colors.orange : Colors.green,
           ),
         );
@@ -110,7 +114,7 @@ class _DisableListPageState extends State<DisableListPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('测试失败: $e')),
+          SnackBar(content: Text(l10n.testFailed(e.toString()))),
         );
       }
     }
@@ -118,14 +122,15 @@ class _DisableListPageState extends State<DisableListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('禁用列表管理'),
+        title: Text(l10n.disableListManagement),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadDisableList,
-            tooltip: '刷新',
+            tooltip: l10n.refresh,
           ),
         ],
       ),
@@ -142,11 +147,11 @@ class _DisableListPageState extends State<DisableListPage> {
                       Expanded(
                         child: TextField(
                           controller: _inputController,
-                          decoration: const InputDecoration(
-                            hintText: '输入 bisName',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            hintText: l10n.bisNameHint,
+                            border: const OutlineInputBorder(),
                             isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
+                            contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 12,
                             ),
@@ -156,7 +161,7 @@ class _DisableListPageState extends State<DisableListPage> {
                       const SizedBox(width: 12),
                       FilledButton(
                         onPressed: _addToDisableList,
-                        child: const Text('添加'),
+                        child: Text(l10n.add),
                       ),
                     ],
                   ),
@@ -168,9 +173,9 @@ class _DisableListPageState extends State<DisableListPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '远程可用离线包:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.remoteAvailablePackages,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 if (_isLoadingRemote)
@@ -184,7 +189,7 @@ class _DisableListPageState extends State<DisableListPage> {
                   )
                 else if (_remotePackages.isEmpty)
                   Text(
-                    '暂无可用包',
+                    l10n.noPackagesAvailable,
                     style: TextStyle(color: Colors.grey.shade500),
                   )
                 else
@@ -218,7 +223,7 @@ class _DisableListPageState extends State<DisableListPage> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '当前 ${_disableList.length} 个禁用项',
+                        l10n.currentDisableItems(_disableList.length),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -239,7 +244,7 @@ class _DisableListPageState extends State<DisableListPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                '暂无禁用项',
+                                l10n.noDisableItems,
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey.shade500,
@@ -279,7 +284,7 @@ class _DisableListPageState extends State<DisableListPage> {
                                   children: [
                                     IconButton(
                                       icon: const Icon(Icons.play_arrow),
-                                      tooltip: '测试',
+                                      tooltip: l10n.test,
                                       onPressed: () => _testDisable(bisName),
                                     ),
                                     IconButton(
@@ -287,7 +292,7 @@ class _DisableListPageState extends State<DisableListPage> {
                                         Icons.delete_outline,
                                         color: Colors.red.shade400,
                                       ),
-                                      tooltip: '删除',
+                                      tooltip: l10n.delete,
                                       onPressed: () => _removeItem(bisName),
                                     ),
                                   ],
@@ -303,13 +308,14 @@ class _DisableListPageState extends State<DisableListPage> {
   }
 
   Future<void> _removeItem(String bisName) async {
+    final l10n = AppLocalizations.of(context)!;
     // 注意：SDK 没有直接从禁用列表移除的方法
     // 实际需要通过重新初始化配置来实现
     // 这里仅提示用户
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('删除需要重新初始化 SDK 配置'),
+        SnackBar(
+          content: Text(l10n.deleteRequiresReinitSdk),
           backgroundColor: Colors.orange,
         ),
       );

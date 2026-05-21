@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 
 /// 简单演示页面：URL 包含 ?offweb=test-offline-package.
@@ -16,9 +18,10 @@ class ParamOfflineDemoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('离线加载模式'),
+        title: Text(l10n.offlineLoadingMode),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

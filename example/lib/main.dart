@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
 import 'config.dart';
+import 'l10n/app_localizations.dart';
 import 'pages/demo_menu_page.dart';
 
 void main() async {
@@ -77,6 +78,9 @@ class DemoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'OfflineWebView Demo',
+      locale: null,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2563EB),

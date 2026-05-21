@@ -1,5 +1,4 @@
 import 'package:offline_webview/offline_webview.dart';
-import '../monitor/performance_monitor.dart';
 
 /// 离线Web后台任务管理器。
 class OfflineTaskManager {

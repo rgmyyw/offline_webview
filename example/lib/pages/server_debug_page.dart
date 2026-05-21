@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 
 /// 本地服务器端点调试页面。
@@ -151,14 +153,15 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('服务调试'),
+        title: Text(l10n.serverDebugPage),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => setState(() => _logs.clear()),
-            tooltip: '清空日志',
+            tooltip: l10n.clearLogs,
           ),
         ],
       ),
@@ -180,9 +183,9 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
                       color: Theme.of(context).primaryColor,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      '服务端点',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.serverEndpoints,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -209,47 +212,52 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
                   // Endpoint cards
                   _buildEndpointCard(
                     title: 'Health',
-                    description: '健康检查端点',
+                    description: l10n.healthCheck,
                     icon: Icons.favorite,
                     color: Colors.pink,
                     result: _healthResult,
                     onTest: _testHealth,
+                    l10n: l10n,
                   ),
                   const SizedBox(height: 12),
                   _buildEndpointCard(
-                    title: 'Query (检查更新)',
-                    description: '查询离线包更新状态',
+                    title: l10n.queryUpdate,
+                    description: l10n.queryUpdateDesc,
                     icon: Icons.search,
                     color: Colors.blue,
                     result: _queryResult,
                     onTest: _testQuery,
+                    l10n: l10n,
                   ),
                   const SizedBox(height: 12),
                   _buildEndpointCard(
-                    title: 'Query (无更新)',
-                    description: '测试无更新响应',
+                    title: l10n.queryNoUpdate,
+                    description: l10n.queryNoUpdateDesc,
                     icon: Icons.search_off,
                     color: Colors.grey,
                     result: _queryNoUpdateResult,
                     onTest: _testQueryNoUpdate,
+                    l10n: l10n,
                   ),
                   const SizedBox(height: 12),
                   _buildEndpointCard(
-                    title: 'Package',
-                    description: '下载离线包 zip',
+                    title: l10n.package,
+                    description: l10n.packageDesc,
                     icon: Icons.download,
                     color: Colors.green,
                     result: _packageResult,
                     onTest: _testPackage,
+                    l10n: l10n,
                   ),
                   const SizedBox(height: 12),
                   _buildEndpointCard(
-                    title: 'Demo',
-                    description: '演示 HTML 页面',
+                    title: l10n.demo,
+                    description: l10n.demoPage,
                     icon: Icons.web,
                     color: Colors.orange,
                     result: _demoResult,
                     onTest: _testDemo,
+                    l10n: l10n,
                   ),
 
                   const SizedBox(height: 24),
@@ -263,16 +271,16 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
                         color: Theme.of(context).primaryColor,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        '日志',
-                        style: TextStyle(
+                      Text(
+                        l10n.logs,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       const Spacer(),
                       Text(
-                        '${_logs.length} 条',
+                        l10n.logCount(_logs.length),
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -291,10 +299,10 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
                       border: Border.all(color: Colors.grey.shade800, width: 1),
                     ),
                     child: _logs.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Text(
-                              '点击上方按钮开始测试...',
-                              style: TextStyle(color: Colors.grey),
+                              l10n.clickButtonToStartTest,
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           )
                         : ListView.builder(
@@ -336,6 +344,7 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
     required Color color,
     required _EndpointResult result,
     required VoidCallback onTest,
+    required AppLocalizations l10n,
   }) {
     return Card(
       child: Padding(
@@ -369,19 +378,19 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 6),
-                  _buildResultIndicator(result),
+                  _buildResultIndicator(result, l10n),
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            FilledButton.tonal(onPressed: onTest, child: const Text('测试')),
+            FilledButton.tonal(onPressed: onTest, child: Text(l10n.testButton)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildResultIndicator(_EndpointResult result) {
+  Widget _buildResultIndicator(_EndpointResult result, AppLocalizations l10n) {
     if (result.isLoading) {
       return Row(
         children: [
@@ -395,7 +404,7 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
           ),
           const SizedBox(width: 6),
           Text(
-            '测试中...',
+            l10n.testing,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
           ),
         ],
@@ -408,7 +417,7 @@ class _ServerDebugPageState extends State<ServerDebugPage> {
           Icon(Icons.circle_outlined, size: 12, color: Colors.grey.shade400),
           const SizedBox(width: 6),
           Text(
-            '未测试',
+            l10n.notTested,
             style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
           ),
         ],

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
+import '../l10n/app_localizations.dart';
+
 import '../config.dart';
 
 /// 预加载测试页面
@@ -26,12 +28,14 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
   @override
   void initState() {
     super.initState();
-    _addLog('就绪，请输入 bisName 并点击开始预加载', isInfo: true);
+    final l10n = AppLocalizations.of(context)!;
+    _addLog(l10n.readyEnterBisNameClickStartPreload, isInfo: true);
     _loadAvailableBisNames();
   }
 
   Future<void> _loadAvailableBisNames() async {
-    _addLog('正在从服务端获取可用离线包...');
+    final l10n = AppLocalizations.of(context)!;
+    _addLog(l10n.gettingAvailablePackages);
     try {
       final response = await http
           .get(Uri.parse(AppConfig.baseUrl))
@@ -43,12 +47,12 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
         setState(() {
           _availableBisNames = packages;
         });
-        _addLog('服务端共有 ${packages.length} 个离线包', isInfo: true);
+        _addLog(l10n.serverHasPackagesCount(packages.length), isInfo: true);
       } else {
-        _addLog('获取失败: ${response.statusCode}', isError: true);
+        _addLog(l10n.fetchFailed(response.statusCode), isError: true);
       }
     } catch (e) {
-      _addLog('获取离线包列表异常: $e', isError: true);
+      _addLog(l10n.fetchPackageListError(e.toString()), isError: true);
     }
   }
 
@@ -69,11 +73,12 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
   }
 
   Future<void> _startPreload() async {
+    final l10n = AppLocalizations.of(context)!;
     final bisName = _bisNameController.text.trim();
     if (bisName.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('请输入 bisName')));
+      ).showSnackBar(SnackBar(content: Text(l10n.enterBisName)));
       return;
     }
 
@@ -82,42 +87,43 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
       _logs.clear();
     });
 
-    _addLog('开始预加载测试: $bisName', isInfo: true);
+    _addLog(l10n.startPreloadTest(bisName), isInfo: true);
 
     final startTime = DateTime.now();
 
     try {
       // 获取本地当前版本
       final localVersion = await FileMgr.getCurVersion(bisName);
-      _addLog('本地版本: ${localVersion.isEmpty ? "无" : localVersion}');
+      _addLog(l10n.localVersion(localVersion.isEmpty ? l10n.localVersionNone : localVersion));
 
       // 通过服务端点查询更新
-      _addLog('正在查询服务端点...');
+      _addLog(l10n.queryingServerEndpoint);
       final result = await _queryUpdate(bisName, localVersion);
-      _addLog('查询结果: ${result.message}');
+      _addLog(l10n.queryResult(result.message));
 
       if (result.hasUpdate) {
-        _addLog('发现新版本: ${result.version}，准备下载...', isInfo: true);
+        _addLog(l10n.foundNewVersionPrepareDownload(result.version), isInfo: true);
         // 触发下载流程
         await _triggerDownload(bisName, result.version);
       } else {
-        _addLog('已是最新版本，无需下载', isInfo: true);
+        _addLog(l10n.alreadyLatestNoDownload, isInfo: true);
       }
 
       final elapsed = DateTime.now().difference(startTime).inMilliseconds;
-      _addLog('预加载测试完成，耗时: ${elapsed}ms', isInfo: true);
+      _addLog(l10n.preloadTestComplete(elapsed), isInfo: true);
     } catch (e) {
       Logger.e('PreloadTestPage', '预加载测试失败: $e');
-      _addLog('预加载测试失败: $e', isError: true);
+      _addLog(l10n.preloadTestFailed(e.toString()), isError: true);
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
   Future<_QueryResult> _queryUpdate(String bisName, String localVersion) async {
+    final l10n = AppLocalizations.of(context)!;
     final queryUrl =
         '${AppConfig.queryUrl}?bisName=$bisName&offlineZipVer=$localVersion';
-    _addLog('查询URL: $queryUrl');
+    _addLog(l10n.queryUrl(queryUrl));
 
     try {
       final response = await http
@@ -135,21 +141,21 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
             hasUpdate: true,
             version: version,
             url: url,
-            message: '有新版本',
+            message: l10n.foundNewVersion(version),
           );
         } else if (resultCode == 0) {
           return _QueryResult(
             hasUpdate: false,
             version: localVersion,
             url: null,
-            message: '已是最新',
+            message: l10n.alreadyLatestNoDownload,
           );
         } else {
           return _QueryResult(
             hasUpdate: false,
             version: '',
             url: null,
-            message: '无离线包',
+            message: l10n.noOfflinePackageDataSmall,
           );
         }
       } else {
@@ -157,7 +163,7 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
           hasUpdate: false,
           version: '',
           url: null,
-          message: '请求失败: ${response.statusCode}',
+          message: l10n.requestFailed(response.statusCode),
         );
       }
     } catch (e) {
@@ -165,13 +171,14 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
         hasUpdate: false,
         version: '',
         url: null,
-        message: '查询异常: $e',
+        message: l10n.fetchOfflinePackageFailed(e.toString()),
       );
     }
   }
 
   Future<void> _triggerDownload(String bisName, String newVersion) async {
-    _addLog('触发下载流程...');
+    final l10n = AppLocalizations.of(context)!;
+    _addLog(l10n.triggerDownloadFlow);
 
     final completer = Completer<void>();
 
@@ -180,14 +187,14 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
       _FlowListener(
         onDone: (info) {
           if (info != null) {
-            _addLog('下载完成，新版本: ${info.version}', isInfo: true);
+            _addLog(l10n.downloadCompleteNewVersion(info.version), isInfo: true);
           } else {
-            _addLog('下载完成', isInfo: true);
+            _addLog(l10n.downloadComplete, isInfo: true);
           }
           completer.complete();
         },
         onError: (info, err) {
-          _addLog('下载失败: $err', isError: true);
+          _addLog(l10n.downloadFailedError(err.toString()), isError: true);
           completer.completeError(err);
         },
       ),
@@ -202,14 +209,15 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('预加载测试'),
+        title: Text(l10n.preloadTestPage),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => setState(() => _logs.clear()),
-            tooltip: '清空日志',
+            tooltip: l10n.clearLogs,
           ),
         ],
       ),
@@ -224,10 +232,10 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
                 Expanded(
                   child: TextField(
                     controller: _bisNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'bisName',
-                      hintText: '例如: act3-2108',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.bisNameLabel,
+                      hintText: l10n.exampleBisName,
+                      border: const OutlineInputBorder(),
                     ),
                     enabled: !_isLoading,
                   ),
@@ -244,7 +252,7 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text('开始'),
+                      : Text(l10n.start),
                 ),
               ],
             ),
@@ -258,13 +266,13 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  '可用离线包:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  l10n.availableOfflinePackages,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 if (_availableBisNames.isEmpty)
-                  Text('暂无离线包数据', style: TextStyle(color: Colors.grey.shade500))
+                  Text(l10n.noOfflinePackageDataSmall, style: TextStyle(color: Colors.grey.shade500))
                 else
                   Wrap(
                     spacing: 8,
@@ -293,13 +301,13 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
                   color: Theme.of(context).primaryColor,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '测试日志',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  l10n.testLogs,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const Spacer(),
                 Text(
-                  '${_logs.length} 条',
+                  l10n.logCount(_logs.length),
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -319,12 +327,12 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
                 border: Border.all(color: Colors.grey.shade800, width: 1),
               ),
               child: _logs.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        '点击开始按钮进行预加载测试...',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    )
+                      l10n.clickStartButtonForPreloadTest,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  )
                   : ListView.builder(
                       reverse: true,
                       itemCount: _logs.length,

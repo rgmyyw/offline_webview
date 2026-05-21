@@ -1,0 +1,941 @@
+{
+  "@@locale": "en",
+  "appTitle": "OfflineWebView Demo",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "offlineLoadingMode": "Offline Loading Mode",
+  "@offlineLoadingMode": {
+    "description": "Demo menu item title"
+  },
+  "offlineLoadingModeSubtitle": "URL with offweb parameter, directly load offline package",
+  "@offlineLoadingModeSubtitle": {
+    "description": "Demo menu item subtitle"
+  },
+  "ruleMatchMode": "Rule Match Mode",
+  "@ruleMatchMode": {
+    "description": "Demo menu item title"
+  },
+  "ruleMatchModeSubtitle": "Auto-match URL and inject offweb parameter",
+  "@ruleMatchModeSubtitle": {
+    "description": "Demo menu item subtitle"
+  },
+  "debugTools": "Debug Tools",
+  "@debugTools": {
+    "description": "Demo menu item title"
+  },
+  "debugToolsSubtitle": "Offline package management, URL matching, cache cleanup, etc.",
+  "@debugToolsSubtitle": {
+    "description": "Demo menu item subtitle"
+  },
+  "serverDebug": "Server Debug",
+  "@serverDebug": {
+    "description": "Demo menu item title"
+  },
+  "serverDebugSubtitle": "Test local server endpoints",
+  "@serverDebugSubtitle": {
+    "description": "Demo menu item subtitle"
+  },
+  "customConfig": "Custom Config",
+  "@customConfig": {
+    "description": "Demo menu item title"
+  },
+  "customConfigSubtitle": "Customize offline package download URL and access URL",
+  "@customConfigSubtitle": {
+    "description": "Demo menu item subtitle"
+  },
+  "offlinePackageMode": "Offline Package Mode",
+  "@offlinePackageMode": {
+    "description": "Page title"
+  },
+  "networkLoading": "Network Loading",
+  "@networkLoading": {
+    "description": "Page title"
+  },
+  "ruleMatchDemo": "Rule Match Demo",
+  "@ruleMatchDemo": {
+    "description": "Page title"
+  },
+  "debugToolsPage": "Debug Tools",
+  "@debugToolsPage": {
+    "description": "Page title"
+  },
+  "serverDebugPage": "Server Debug",
+  "@serverDebugPage": {
+    "description": "Page title"
+  },
+  "customConfigPage": "Custom Config",
+  "@customConfigPage": {
+    "description": "Page title"
+  },
+  "configInfo": "Config Info",
+  "@configInfo": {
+    "description": "Page title"
+  },
+  "packageManagement": "Offline Package Management",
+  "@packageManagement": {
+    "description": "Page title"
+  },
+  "disableListManagement": "Disable List Management",
+  "@disableListManagement": {
+    "description": "Page title"
+  },
+  "forceUpdateCheck": "Force Update Check",
+  "@forceUpdateCheck": {
+    "description": "Page title"
+  },
+  "preloadTest": "Preload Test",
+  "@preloadTest": {
+    "description": "Page title"
+  },
+  "urlMatchTest": "URL Match Test",
+  "@urlMatchTest": {
+    "description": "Page title"
+  },
+  "screenshotView": "Screenshot View",
+  "@screenshotView": {
+    "description": "Page title"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Tooltip for refresh button"
+  },
+  "confirmClear": "Confirm Clear",
+  "@confirmClear": {
+    "description": "Dialog title"
+  },
+  "confirmClearWebViewCache": "Are you sure you want to clear all WebView cache?",
+  "@confirmClearWebViewCache": {
+    "description": "Dialog content"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button text"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Button text"
+  },
+  "webViewCacheCleared": "WebView cache cleared",
+  "@webViewCacheCleared": {
+    "description": "Snackbar message"
+  },
+  "basicConfig": "Basic Config",
+  "@basicConfig": {
+    "description": "Section title"
+  },
+  "ruleConfig": "Rule Config",
+  "@ruleConfig": {
+    "description": "Section title"
+  },
+  "sdkStatus": "SDK Status",
+  "@sdkStatus": {
+    "description": "Section title"
+  },
+  "noRuleConfig": "No rule config",
+  "@noRuleConfig": {
+    "description": "Empty state text"
+  },
+  "initStatus": "Init Status",
+  "@initStatus": {
+    "description": "Status label"
+  },
+  "initialized": "Initialized",
+  "@initialized": {
+    "description": "Status value"
+  },
+  "notInitialized": "Not Initialized",
+  "@notInitialized": {
+    "description": "Status value"
+  },
+  "request": "Request",
+  "@request": {
+    "description": "Status label"
+  },
+  "configured": "Configured",
+  "@configured": {
+    "description": "Status value"
+  },
+  "notConfigured": "Not Configured",
+  "@notConfigured": {
+    "description": "Status value"
+  },
+  "offlinePackageManagement": "Offline Package Management",
+  "@offlinePackageManagement": {
+    "description": "Card title"
+  },
+  "offlinePackageManagementDesc": "View and delete offline package cache",
+  "@offlinePackageManagementDesc": {
+    "description": "Card description"
+  },
+  "clearWebViewCache": "Clear WebView Cache",
+  "@clearWebViewCache": {
+    "description": "Card title"
+  },
+  "clearWebViewCacheDesc": "Clear all WebView cache data",
+  "@clearWebViewCacheDesc": {
+    "description": "Card description"
+  },
+  "urlMatchTestCard": "URL Match Test",
+  "@urlMatchTestCard": {
+    "description": "Card title"
+  },
+  "urlMatchTestCardDesc": "Test which bisName a URL matches to",
+  "@urlMatchTestCardDesc": {
+    "description": "Card description"
+  },
+  "disableListManagementCard": "Disable List Management",
+  "@disableListManagementCard": {
+    "description": "Card title"
+  },
+  "disableListManagementDesc": "View and add disable items",
+  "@disableListManagementDesc": {
+    "description": "Card description"
+  },
+  "forceUpdateCheckCard": "Force Update Check",
+  "@forceUpdateCheckCard": {
+    "description": "Card title"
+  },
+  "forceUpdateCheckDesc": "Force update check for specified bisName",
+  "@forceUpdateCheckDesc": {
+    "description": "Card description"
+  },
+  "preloadTestCard": "Preload Test",
+  "@preloadTestCard": {
+    "description": "Card title"
+  },
+  "preloadTestDesc": "Test offline package preload status",
+  "@preloadTestDesc": {
+    "description": "Card description"
+  },
+  "configInfoCard": "Config Info",
+  "@configInfoCard": {
+    "description": "Card title"
+  },
+  "configInfoCardDesc": "View current SDK config and rules",
+  "@configInfoCardDesc": {
+    "description": "Card description"
+  },
+  "bisNameHint": "Enter bisName",
+  "@bisNameHint": {
+    "description": "Text field hint"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Button text"
+  },
+  "remoteAvailablePackages": "Remote Available Packages:",
+  "@remoteAvailablePackages": {
+    "description": "Section label"
+  },
+  "noPackagesAvailable": "No packages available",
+  "@noPackagesAvailable": {
+    "description": "Empty state text"
+  },
+  "currentDisableItems": "Current {count} disable items",
+  "@currentDisableItems": {
+    "description": "Statistics label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noDisableItems": "No disable items",
+  "@noDisableItems": {
+    "description": "Empty state text"
+  },
+  "test": "Test",
+  "@test": {
+    "description": "Tooltip"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Tooltip"
+  },
+  "confirmDelete": "Confirm Delete",
+  "@confirmDelete": {
+    "description": "Dialog title"
+  },
+  "confirmDeletePackageCache": "Are you sure you want to delete offline cache for \"{bisName}\"?",
+  "@confirmDeletePackageCache": {
+    "description": "Dialog content",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmClearAll": "Confirm Clear All",
+  "@confirmClearAll": {
+    "description": "Dialog title"
+  },
+  "confirmDeleteAllCache": "Are you sure you want to delete all offline cache? This cannot be undone.",
+  "@confirmDeleteAllCache": {
+    "description": "Dialog content"
+  },
+  "deleteAll": "Delete All",
+  "@deleteAll": {
+    "description": "Button text"
+  },
+  "deleted": "Deleted {bisName}",
+  "@deleted": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailed": "Delete failed",
+  "@deleteFailed": {
+    "description": "Snackbar message"
+  },
+  "clearedAllCache": "Cleared all cache",
+  "@clearedAllCache": {
+    "description": "Snackbar message"
+  },
+  "clearFailed": "Clear failed",
+  "@clearFailed": {
+    "description": "Snackbar message"
+  },
+  "offlinePackageCount": "Offline Package Count",
+  "@offlinePackageCount": {
+    "description": "Stat card label"
+  },
+  "totalSize": "Total Size",
+  "@totalSize": {
+    "description": "Stat card label"
+  },
+  "offlinePackageList": "Offline Package List",
+  "@offlinePackageList": {
+    "description": "Section title"
+  },
+  "packagesCount": "{count} packages",
+  "@packagesCount": {
+    "description": "Package count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noOfflinePackageData": "No offline package data",
+  "@noOfflinePackageData": {
+    "description": "Empty state text"
+  },
+  "version": "Version",
+  "@version": {
+    "description": "Label"
+  },
+  "size": "Size",
+  "@size": {
+    "description": "Label"
+  },
+  "bisNameLabel": "bisName",
+  "@bisNameLabel": {
+    "description": "Text field label"
+  },
+  "exampleBisName": "e.g: act3-2108",
+  "@exampleBisName": {
+    "description": "Text field hint"
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Button text"
+  },
+  "updateLogs": "Update Logs",
+  "@updateLogs": {
+    "description": "Section title"
+  },
+  "logCount": "{count} logs",
+  "@logCount": {
+    "description": "Log count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "clickStartButtonForUpdateCheck": "Click start button for update check...",
+  "@clickStartButtonForUpdateCheck": {
+    "description": "Empty state text"
+  },
+  "readyEnterBisNameClickStart": "Ready, enter bisName and click start",
+  "@readyEnterBisNameClickStart": {
+    "description": "Initial log message"
+  },
+  "startUpdateCheck": "Start update check: {bisName}",
+  "@startUpdateCheck": {
+    "description": "Log message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "localVersion": "Local version: {version}",
+  "@localVersion": {
+    "description": "Log message",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "requestingServer": "Requesting server...",
+  "@requestingServer": {
+    "description": "Log message"
+  },
+  "notConfiguredOfflineRequest": "Not configured IOfflineRequest, cannot request server",
+  "@notConfiguredOfflineRequest": {
+    "description": "Log message"
+  },
+  "triggeredCheckPackage": "Triggered checkPackage",
+  "@triggeredCheckPackage": {
+    "description": "Log message"
+  },
+  "updateTaskSubmitted": "Update task submitted, check logs for progress",
+  "@updateTaskSubmitted": {
+    "description": "Log message"
+  },
+  "foundNewVersion": "Found new version: {version}",
+  "@foundNewVersion": {
+    "description": "Log message",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "currentVersion": "Current version: {version}",
+  "@currentVersion": {
+    "description": "Log message",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updateCheckComplete": "Update check complete",
+  "@updateCheckComplete": {
+    "description": "Log message"
+  },
+  "updateFailed": "Update failed: {error}",
+  "@updateFailed": {
+    "description": "Log message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "clearLogs": "Clear Logs",
+  "@clearLogs": {
+    "description": "Tooltip"
+  },
+  "availableOfflinePackages": "Available Offline Packages:",
+  "@availableOfflinePackages": {
+    "description": "Section label"
+  },
+  "noOfflinePackageDataSmall": "No offline package data",
+  "@noOfflinePackageDataSmall": {
+    "description": "Empty state text"
+  },
+  "enterBisName": "Please enter bisName",
+  "@enterBisName": {
+    "description": "Snackbar message"
+  },
+  "serverConfig": "Server Config",
+  "@serverConfig": {
+    "description": "Section title"
+  },
+  "offlinePackageServerAddress": "Offline Package Server Address",
+  "@offlinePackageServerAddress": {
+    "description": "Text field label"
+  },
+  "exampleServerAddress": "e.g: http://192.168.1.100:9999",
+  "@exampleServerAddress": {
+    "description": "Text field hint"
+  },
+  "getOfflinePackageList": "Get Offline Package List",
+  "@getOfflinePackageList": {
+    "description": "Button text"
+  },
+  "selectOfflinePackage": "Select Offline Package",
+  "@selectOfflinePackage": {
+    "description": "Dropdown label"
+  },
+  "pleaseSelectPackage": "Please select package",
+  "@pleaseSelectPackage": {
+    "description": "Dropdown hint"
+  },
+  "businessConfig": "Business Config",
+  "@businessConfig": {
+    "description": "Section title"
+  },
+  "businessName": "Business Name (bisName)",
+  "@businessName": {
+    "description": "Text field label"
+  },
+  "examplePackage": "e.g: package",
+  "@examplePackage": {
+    "description": "Text field hint"
+  },
+  "accessAddress": "Access Address",
+  "@accessAddress": {
+    "description": "Text field label"
+  },
+  "exampleAccessAddress": "e.g: https://example.com?offweb=package",
+  "@exampleAccessAddress": {
+    "description": "Text field hint"
+  },
+  "loadingMethod": "Loading Method",
+  "@loadingMethod": {
+    "description": "Section title"
+  },
+  "useOfflinePackageLoading": "Use Offline Package Loading",
+  "@useOfflinePackageLoading": {
+    "description": "Card title"
+  },
+  "useOfflinePackageLoadingDesc": "Accelerate H5 page loading via offline package",
+  "@useOfflinePackageLoadingDesc": {
+    "description": "Card description"
+  },
+  "doNotUseOfflinePackage": "Do Not Use Offline Package",
+  "@doNotUseOfflinePackage": {
+    "description": "Card title"
+  },
+  "doNotUseOfflinePackageDesc": "Load online page directly (control group)",
+  "@doNotUseOfflinePackageDesc": {
+    "description": "Card description"
+  },
+  "directNavigate": "Direct Navigate",
+  "@directNavigate": {
+    "description": "Card title"
+  },
+  "directNavigateDesc": "Open page without preload",
+  "@directNavigateDesc": {
+    "description": "Card description"
+  },
+  "launch": "Launch",
+  "@launch": {
+    "description": "Button text"
+  },
+  "navigate": "Navigate",
+  "@navigate": {
+    "description": "Button text"
+  },
+  "tools": "Tools",
+  "@tools": {
+    "description": "Section title"
+  },
+  "viewScreenshotCache": "View Screenshot Cache",
+  "@viewScreenshotCache": {
+    "description": "Button label"
+  },
+  "cleanOfflinePackage": "Clean Offline Package",
+  "@cleanOfflinePackage": {
+    "description": "Button label"
+  },
+  "pleaseFillAllFields": "Please fill all fields",
+  "@pleaseFillAllFields": {
+    "description": "Snackbar message"
+  },
+  "pleaseFillServerAndBisName": "Please fill server address and bisName",
+  "@pleaseFillServerAndBisName": {
+    "description": "Snackbar message"
+  },
+  "fetchedPackagesCount": "Fetched {count} offline packages: {packages}",
+  "@fetchedPackagesCount": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "packages": {
+        "type": "String"
+      }
+    }
+  },
+  "requestFailed": "Request failed: {statusCode}",
+  "@requestFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "fetchOfflinePackageFailed": "Fetch offline package failed: {error}",
+  "@fetchOfflinePackageFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseFillAccessAddress": "Please fill access address",
+  "@pleaseFillAccessAddress": {
+    "description": "Snackbar message"
+  },
+  "initFailed": "Init failed: {error}",
+  "@initFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseFillBisNameFirst": "Please fill bisName first",
+  "@pleaseFillBisNameFirst": {
+    "description": "Snackbar message"
+  },
+  "confirmClean": "Confirm Clean",
+  "@confirmClean": {
+    "description": "Dialog title"
+  },
+  "confirmCleanPackageCache": "Are you sure you want to clean offline package cache for \"{bisName}\"?",
+  "@confirmCleanPackageCache": {
+    "description": "Dialog content",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Button text"
+  },
+  "cleanedPackageCache": "Cleaned \"{bisName}\" offline package cache",
+  "@cleanedPackageCache": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "screenshotNotExists": "Screenshot does not exist: {path}",
+  "@screenshotNotExists": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "sizeBytes": "Size: {bytes} bytes\nPath: {path}",
+  "@sizeBytes": {
+    "description": "Info text",
+    "placeholders": {
+      "bytes": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "imageLoadFailed": "Image load failed: {error}",
+  "@imageLoadFailed": {
+    "description": "Error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addedToDisableList": "Added \"{bisName}\" to disable list",
+  "@addedToDisableList": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "addFailed": "Add failed: {error}",
+  "@addFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bisNameIsDisabled": "\"{bisName}\" is disabled",
+  "@bisNameIsDisabled": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "bisNameNotDisabled": "\"{bisName}\" is not disabled",
+  "@bisNameNotDisabled": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "testFailed": "Test failed: {error}",
+  "@testFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteRequiresReinitSdk": "Delete requires re-init SDK config",
+  "@deleteRequiresReinitSdk": {
+    "description": "Snackbar message"
+  },
+  "serverEndpoints": "Server Endpoints",
+  "@serverEndpoints": {
+    "description": "Section title"
+  },
+  "health": "Health",
+  "@health": {
+    "description": "Endpoint name"
+  },
+  "healthCheck": "Health Check Endpoint",
+  "@healthCheck": {
+    "description": "Endpoint description"
+  },
+  "queryUpdate": "Query (Check Update)",
+  "@queryUpdate": {
+    "description": "Endpoint name"
+  },
+  "queryUpdateDesc": "Query offline package update status",
+  "@queryUpdateDesc": {
+    "description": "Endpoint description"
+  },
+  "queryNoUpdate": "Query (No Update)",
+  "@queryNoUpdate": {
+    "description": "Endpoint name"
+  },
+  "queryNoUpdateDesc": "Test no-update response",
+  "@queryNoUpdateDesc": {
+    "description": "Endpoint description"
+  },
+  "package": "Package",
+  "@package": {
+    "description": "Endpoint name"
+  },
+  "packageDesc": "Download offline package zip",
+  "@packageDesc": {
+    "description": "Endpoint description"
+  },
+  "demo": "Demo",
+  "@demo": {
+    "description": "Endpoint name"
+  },
+  "demoPage": "Demo HTML Page",
+  "@demoPage": {
+    "description": "Endpoint description"
+  },
+  "testButton": "Test",
+  "@testButton": {
+    "description": "Button text"
+  },
+  "logs": "Logs",
+  "@logs": {
+    "description": "Section title"
+  },
+  "clickButtonToStartTest": "Click button above to start test...",
+  "@clickButtonToStartTest": {
+    "description": "Empty state text"
+  },
+  "testing": "Testing...",
+  "@testing": {
+    "description": "Status text"
+  },
+  "notTested": "Not tested",
+  "@notTested": {
+    "description": "Status text"
+  },
+  "inputUrl": "Input URL",
+  "@inputUrl": {
+    "description": "Section label"
+  },
+  "exampleUrlHint": "e.g: https://m.example.com/act3/index.html",
+  "@exampleUrlHint": {
+    "description": "Text field hint"
+  },
+  "testMatch": "Test Match",
+  "@testMatch": {
+    "description": "Button text"
+  },
+  "commonTestUrls": "Common Test URLs",
+  "@commonTestUrls": {
+    "description": "Section label"
+  },
+  "matchResult": "Match Result",
+  "@matchResult": {
+    "description": "Section label"
+  },
+  "noMatchBisName": "No bisName matched",
+  "@noMatchBisName": {
+    "description": "Result text"
+  },
+  "matchFailed": "Match failed",
+  "@matchFailed": {
+    "description": "Result text"
+  },
+  "loadFailed": "Load failed: {error}",
+  "@loadFailed": {
+    "description": "Snackbar message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "preloadTestPage": "Preload Test",
+  "@preloadTestPage": {
+    "description": "Page title"
+  },
+  "testLogs": "Test Logs",
+  "@testLogs": {
+    "description": "Section title"
+  },
+  "clickStartButtonForPreloadTest": "Click start button for preload test...",
+  "@clickStartButtonForPreloadTest": {
+    "description": "Empty state text"
+  },
+  "readyEnterBisNameClickStartPreload": "Ready, enter bisName and click start preload",
+  "@readyEnterBisNameClickStartPreload": {
+    "description": "Initial log message"
+  },
+  "gettingAvailablePackages": "Getting available packages from server...",
+  "@gettingAvailablePackages": {
+    "description": "Log message"
+  },
+  "serverHasPackagesCount": "Server has {count} offline packages",
+  "@serverHasPackagesCount": {
+    "description": "Log message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fetchFailed": "Fetch failed: {statusCode}",
+  "@fetchFailed": {
+    "description": "Log message",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "fetchPackageListError": "Fetch package list error: {error}",
+  "@fetchPackageListError": {
+    "description": "Log message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "startPreloadTest": "Start preload test: {bisName}",
+  "@startPreloadTest": {
+    "description": "Log message",
+    "placeholders": {
+      "bisName": {
+        "type": "String"
+      }
+    }
+  },
+  "localVersionNone": "Local version: none",
+  "@localVersionNone": {
+    "description": "Log message"
+  },
+  "queryingServerEndpoint": "Querying server endpoint...",
+  "@queryingServerEndpoint": {
+    "description": "Log message"
+  },
+  "queryResult": "Query result: {message}",
+  "@queryResult": {
+    "description": "Log message",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "foundNewVersionPrepareDownload": "Found new version: {version}, preparing download...",
+  "@foundNewVersionPrepareDownload": {
+    "description": "Log message",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "alreadyLatestNoDownload": "Already latest, no download needed",
+  "@alreadyLatestNoDownload": {
+    "description": "Log message"
+  },
+  "preloadTestComplete": "Preload test complete, elapsed: {ms}ms",
+  "@preloadTestComplete": {
+    "description": "Log message",
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "preloadTestFailed": "Preload test failed: {error}",
+  "@preloadTestFailed": {
+    "description": "Log message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "triggerDownloadFlow": "Trigger download flow...",
+  "@triggerDownloadFlow": {
+    "description": "Log message"
+  },
+  "downloadCompleteNewVersion": "Download complete, new version: {version}",
+  "@downloadCompleteNewVersion": {
+    "description": "Log message",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadComplete": "Download complete",
+  "@downloadComplete": {
+    "description": "Log message"
+  },
+  "downloadFailedError": "Download failed: {error}",
+  "@downloadFailedError": {
+    "description": "Log message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "queryUrl": "Query URL: {url}",
+  "@queryUrl": {
+    "description": "Log message",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  }
+}
