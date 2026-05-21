@@ -15,13 +15,11 @@ class OnlineWebPage extends StatefulWidget {
 
 class _OnlineWebPageState extends State<OnlineWebPage> {
   late InAppWebViewController _controller;
-  DateTime? _startTime;
 
   @override
   void initState() {
     super.initState();
-    _startTime = DateTime.now();
-    Logger.d('OnlineWebPage', '页面创建, 开始计时');
+    Logger.d('OnlineWebPage', '页面创建');
   }
 
   String _buildUrl() {
@@ -37,37 +35,29 @@ class _OnlineWebPageState extends State<OnlineWebPage> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              _startTime = DateTime.now();
               _controller.reload();
             },
           ),
         ],
       ),
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(_buildUrl())),
-        initialSettings: InAppWebViewSettings(
-          useShouldOverrideUrlLoading: false,
-          javaScriptEnabled: true,
+      body: FloatingPerformancePanel(
+        child: InAppWebView(
+          initialUrlRequest: URLRequest(url: WebUri(_buildUrl())),
+          initialSettings: InAppWebViewSettings(
+            useShouldOverrideUrlLoading: false,
+            javaScriptEnabled: true,
+          ),
+          onWebViewCreated: (controller) {
+            _controller = controller;
+            Logger.d('OnlineWebPage', 'WebView创建');
+          },
+          onLoadStart: (controller, url) {
+            Logger.d('OnlineWebPage', '开始加载');
+          },
+          onLoadStop: (controller, url) {
+            Logger.i('OnlineWebPage', '加载完成');
+          },
         ),
-        onWebViewCreated: (controller) {
-          _controller = controller;
-          final elapsed = DateTime.now()
-              .difference(_startTime!)
-              .inMilliseconds;
-          Logger.d('OnlineWebPage', 'WebView创建: ${elapsed}ms');
-        },
-        onLoadStart: (controller, url) {
-          final elapsed = DateTime.now()
-              .difference(_startTime!)
-              .inMilliseconds;
-          Logger.d('OnlineWebPage', '开始加载: ${elapsed}ms');
-        },
-        onLoadStop: (controller, url) {
-          final elapsed = DateTime.now()
-              .difference(_startTime!)
-              .inMilliseconds;
-          Logger.i('OnlineWebPage', '加载完成: ${elapsed}ms');
-        },
       ),
     );
   }
