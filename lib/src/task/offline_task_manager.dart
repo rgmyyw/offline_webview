@@ -1,4 +1,5 @@
 import 'package:offline_webview/offline_webview.dart';
+import '../monitor/performance_monitor.dart';
 
 /// 离线Web后台任务管理器。
 class OfflineTaskManager {
@@ -186,7 +187,7 @@ class _TaskFlowListener implements FlowListener {
     Logger.d(tag, '刷新缓存供下次访问使用');
     OfflineWebManager.instance.refreshCurPathCache(bisName);
 
-    // 触发耗时回调
+    // 记录离线阶段耗时到 PerformanceMonitor
     final params = _flowParams;
     if (params != null) {
       final queryMs = params.queryEndTime > params.queryStartTime
@@ -195,7 +196,14 @@ class _TaskFlowListener implements FlowListener {
           ? params.downloadEndTime - params.downloadStartTime : 0;
       final unzipMs = params.unzipEndTime > params.unzipStartTime
           ? params.unzipEndTime - params.unzipStartTime : 0;
-      OfflineWebManager.instance.timingBlock?.call(queryMs, downloadMs, unzipMs);
+      PerformanceMonitor.instance.recordOfflinePhase(
+        queryMs: queryMs,
+        downloadMs: downloadMs,
+        unzipMs: unzipMs,
+        querySuccess: params.querySuccess,
+        downloadSuccess: params.downloadSuccess,
+        unzipSuccess: params.unzipSuccess,
+      );
     }
 
     // 注意：下载完成后不自动reload当前页面
