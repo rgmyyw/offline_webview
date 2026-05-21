@@ -49,29 +49,31 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
           ),
         ],
       ),
-      body: OfflineWebView(
-        initialUrl: widget.visitUrl,
-        controller: _controller,
-        onLoadStart: (controller, url) {
-          setState(() {
-            _status = '加载中: ${url?.toString() ?? ""}';
-            _startTime = DateTime.now();
-          });
-        },
-        onLoadStop: (controller, url) {
-          final elapsed = DateTime.now().difference(_startTime!).inMilliseconds;
-          setState(() {
-            _status = '加载完成: ${url?.toString() ?? ""}';
-            _isLocalLoading =
-                url != null && LocalServer.isLocalServerUrl(url.toString());
-            Logger.i('OfflineWebPage', '加载完成 (耗时: ${elapsed}ms)');
-          });
-        },
-        onReceivedError: (controller, error) {
-          setState(() {
-            _status = '加载错误: ${error?.description ?? "unknown"}';
-          });
-        },
+      body: FloatingPerformancePanel(
+        child: OfflineWebView(
+          initialUrl: widget.visitUrl,
+          controller: _controller,
+          onLoadStart: (controller, url) {
+            setState(() {
+              _status = '加载中: ${url?.toString() ?? ""}';
+              _startTime = DateTime.now();
+            });
+          },
+          onLoadStop: (controller, url) {
+            final elapsed = DateTime.now().difference(_startTime!).inMilliseconds;
+            setState(() {
+              _status = '加载完成: ${url?.toString() ?? ""}';
+              _isLocalLoading =
+                  url != null && LocalServer.isLocalServerUrl(url.toString());
+              Logger.i('OfflineWebPage', '加载完成 (耗时: ${elapsed}ms)');
+            });
+          },
+          onReceivedError: (controller, error) {
+            setState(() {
+              _status = '加载错误: ${error?.description ?? "unknown"}';
+            });
+          },
+        ),
       ),
     );
   }
