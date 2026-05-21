@@ -376,6 +376,22 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         final isLocal = currentUrl.isNotEmpty &&
             LocalServer.isLocalServerUrl(currentUrl);
         final mode = isLocal ? LoadingMode.offline : LoadingMode.network;
+
+        // 如果是离线模式，尝试消费已缓存的离线阶段耗时
+        if (isLocal && _bisName.isNotEmpty) {
+          final cached = PerformanceMonitor.instance.consumeOfflinePhaseTiming(_bisName);
+          if (cached != null) {
+            PerformanceMonitor.instance.recordOfflinePhase(
+              queryMs: cached.queryMs,
+              downloadMs: cached.downloadMs,
+              unzipMs: cached.unzipMs,
+              querySuccess: cached.querySuccess,
+              downloadSuccess: cached.downloadSuccess,
+              unzipSuccess: cached.unzipSuccess,
+            );
+          }
+        }
+
         PerformanceMonitor.instance.recordLoadStart(mode, currentUrl);
 
         _dataReport.notifyWebEvent(

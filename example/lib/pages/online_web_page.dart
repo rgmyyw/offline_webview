@@ -15,6 +15,10 @@ class OnlineWebPage extends StatefulWidget {
 
 class _OnlineWebPageState extends State<OnlineWebPage> {
   late InAppWebViewController _controller;
+  final Stopwatch _sw = Stopwatch()..start();
+  bool _loggedCreate = false;
+  bool _loggedLoadStart = false;
+  bool _loggedCommitVisible = false;
 
   @override
   void initState() {
@@ -24,6 +28,12 @@ class _OnlineWebPageState extends State<OnlineWebPage> {
 
   String _buildUrl() {
     return widget.url;
+  }
+
+  @override
+  void dispose() {
+    _sw.stop();
+    super.dispose();
   }
 
   @override
@@ -50,12 +60,31 @@ class _OnlineWebPageState extends State<OnlineWebPage> {
           onWebViewCreated: (controller) {
             _controller = controller;
             Logger.d('OnlineWebPage', 'WebView创建');
+            if (!_loggedCreate) {
+              PerformanceMonitor.instance.recordWebViewCreated();
+              _loggedCreate = true;
+            }
           },
           onLoadStart: (controller, url) {
             Logger.d('OnlineWebPage', '开始加载');
+            if (!_loggedLoadStart) {
+              PerformanceMonitor.instance.recordLoadStart(
+                LoadingMode.network,
+                url.toString(),
+              );
+              _loggedLoadStart = true;
+            }
+          },
+          onPageCommitVisible: (controller, url) {
+            if (!_loggedCommitVisible) {
+              Logger.d('OnlineWebPage', '首帧可见');
+              PerformanceMonitor.instance.recordFirstPaint();
+              _loggedCommitVisible = true;
+            }
           },
           onLoadStop: (controller, url) {
             Logger.i('OnlineWebPage', '加载完成');
+            PerformanceMonitor.instance.recordLoadComplete(_sw.elapsedMilliseconds);
           },
         ),
       ),

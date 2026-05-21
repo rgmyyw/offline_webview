@@ -1,6 +1,25 @@
 import 'dart:async';
 import 'loading_timeline.dart';
 
+/// 离线阶段耗时数据结构
+class _OfflinePhaseTiming {
+  final int queryMs;
+  final int downloadMs;
+  final int unzipMs;
+  final bool querySuccess;
+  final bool downloadSuccess;
+  final bool unzipSuccess;
+
+  _OfflinePhaseTiming({
+    required this.queryMs,
+    required this.downloadMs,
+    required this.unzipMs,
+    required this.querySuccess,
+    required this.downloadSuccess,
+    required this.unzipSuccess,
+  });
+}
+
 /// SDK 内部性能监控单例.
 ///
 /// 收集离线加载和网络加载的各阶段耗时，通过 [timelineStream] 分发数据。
@@ -15,8 +34,7 @@ class PerformanceMonitor {
   /// 实时 timeline 流，Panel 订阅此 Stream
   Stream<LoadingTimeline> get timelineStream => _controller.stream;
 
-  // --- 加载状态 ---
-
+  // 加载状态
   LoadingMode _currentMode = LoadingMode.network;
   String _currentUrl = '';
   int _webViewCreatedMs = 0;
@@ -34,7 +52,7 @@ class PerformanceMonitor {
   /// 当前加载模式
   LoadingMode get currentMode => _currentMode;
 
-  // --- WebView 生命周期记录 ---
+  // WebView 生命周期记录
 
   /// 记录 WebView 创建时间点（每个 WebView 只调用一次）
   void recordWebViewCreated() {
@@ -46,10 +64,9 @@ class PerformanceMonitor {
     _currentMode = mode;
     _currentUrl = url;
     _loadStartMs = DateTime.now().millisecondsSinceEpoch;
-    // 只重置本次加载相关的状态，保留 WebView 创建时间
     _firstPaintMs = 0;
     _loadCompleteMs = 0;
-    _resetOfflinePhase();
+    // 不重置离线阶段数据（可能在 App 启动时提前完成）
   }
 
   /// 记录首帧可见时间点
@@ -59,7 +76,7 @@ class PerformanceMonitor {
 
   /// 记录页面加载完成，并发送完整 Timeline 到 Stream
   void recordLoadComplete(int totalMs) {
-    if (_loadStartMs == 0) return; // guard against missing recordLoadStart
+    if (_loadStartMs == 0) return;
 
     _loadCompleteMs = DateTime.now().millisecondsSinceEpoch;
 
@@ -74,7 +91,7 @@ class PerformanceMonitor {
       mode: _currentMode,
       url: _currentUrl,
       webViewCreatedMs: webViewCreated,
-      loadStartMs: 0, // 相对于 loadStartMs 本身为 0
+      loadStartMs: 0,
       firstPaintMs: firstPaint,
       loadCompleteMs: loadComplete,
       totalMs: totalMs,
@@ -89,9 +106,10 @@ class PerformanceMonitor {
     _controller.add(timeline);
   }
 
-  // --- 离线阶段记录 ---
+  // 离线阶段记录
+  final Map<String, _OfflinePhaseTiming> _offlinePhaseCache = {};
 
-  /// 记录离线阶段耗时（由 OfflineTaskManager 在包处理完成后调用）
+  /// 记录离线阶段耗时
   void recordOfflinePhase({
     required int queryMs,
     required int downloadMs,
@@ -99,7 +117,18 @@ class PerformanceMonitor {
     required bool querySuccess,
     required bool downloadSuccess,
     required bool unzipSuccess,
+    String? bisName,
   }) {
+    if (bisName != null && bisName.isNotEmpty) {
+      _offlinePhaseCache[bisName] = _OfflinePhaseTiming(
+        queryMs: queryMs,
+        downloadMs: downloadMs,
+        unzipMs: unzipMs,
+        querySuccess: querySuccess,
+        downloadSuccess: downloadSuccess,
+        unzipSuccess: unzipSuccess,
+      );
+    }
     _queryMs = queryMs;
     _downloadMs = downloadMs;
     _unzipMs = unzipMs;
@@ -108,13 +137,14 @@ class PerformanceMonitor {
     _unzipSuccess = unzipSuccess;
   }
 
-  void _resetOfflinePhase() {
-    _queryMs = null;
-    _downloadMs = null;
-    _unzipMs = null;
-    _querySuccess = null;
-    _downloadSuccess = null;
-    _unzipSuccess = null;
+  /// 获取指定 bisName 的离线阶段耗时
+  _OfflinePhaseTiming? getOfflinePhaseTiming(String bisName) {
+    return _offlinePhaseCache[bisName];
+  }
+
+  /// 消耗指定 bisName 的离线阶段耗时
+  _OfflinePhaseTiming? consumeOfflinePhaseTiming(String bisName) {
+    return _offlinePhaseCache.remove(bisName);
   }
 
   void dispose() {

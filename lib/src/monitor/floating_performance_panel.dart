@@ -220,15 +220,11 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
             ],
           ),
           const SizedBox(height: 6),
-          // 阶段耗时
+          // 阶段耗时（按加载流程排序：离线阶段 → WebView生命周期）
           Wrap(
             spacing: 8,
             runSpacing: 4,
             children: [
-              _buildStageChip('WebView创建', '${tl.webViewCreatedMs}ms'),
-              _buildStageChip('开始加载', '${tl.loadStartMs}ms'),
-              _buildStageChip('首帧', '${tl.firstPaintMs}ms'),
-              _buildStageChip('加载完成', '${tl.loadCompleteMs}ms'),
               if (tl.isOffline) ...[
                 _buildStageChip('查询', '${tl.queryMs ?? 0}ms',
                     success: tl.querySuccess),
@@ -236,6 +232,15 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
                     success: tl.downloadSuccess),
                 _buildStageChip('解压', '${tl.unzipMs ?? 0}ms',
                     success: tl.unzipSuccess),
+                _buildStageChip('WebView创建', '${tl.webViewCreatedMs}ms'),
+                _buildStageChip('开始加载', '${tl.loadStartMs}ms'),
+                _buildStageChip('首帧', '${tl.firstPaintMs}ms'),
+                _buildStageChip('加载完成', '${tl.loadCompleteMs}ms'),
+              ] else ...[
+                _buildStageChip('WebView创建', '${tl.webViewCreatedMs}ms'),
+                _buildStageChip('开始加载', '${tl.loadStartMs}ms'),
+                _buildStageChip('首帧', '${tl.firstPaintMs}ms'),
+                _buildStageChip('加载完成', '${tl.loadCompleteMs}ms'),
               ],
             ],
           ),
@@ -245,11 +250,19 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   }
 
   Widget _buildStageChip(String label, String value, {bool? success}) {
-    Color valueColor = Colors.white;
-    if (success == true) {
-      valueColor = Colors.greenAccent;
-    } else if (success == false) {
-      valueColor = Colors.orangeAccent;
+    // 提取数值用于颜色分级
+    final numericValue = int.tryParse(value.replaceAll('ms', '')) ?? 0;
+    Color valueColor;
+    if (numericValue == 0) {
+      valueColor = Colors.white38; // 无数据
+    } else if (numericValue < 50) {
+      valueColor = Colors.greenAccent; // 快
+    } else if (numericValue < 200) {
+      valueColor = Colors.lightBlueAccent; // 中等
+    } else if (numericValue < 500) {
+      valueColor = Colors.yellowAccent; // 较慢
+    } else {
+      valueColor = Colors.deepOrangeAccent; // 慢
     }
 
     return Container(

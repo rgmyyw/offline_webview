@@ -197,6 +197,7 @@ class _TaskFlowListener implements FlowListener {
       final unzipMs = params.unzipEndTime > params.unzipStartTime
           ? params.unzipEndTime - params.unzipStartTime : 0;
       PerformanceMonitor.instance.recordOfflinePhase(
+        bisName: bisName,
         queryMs: queryMs,
         downloadMs: downloadMs,
         unzipMs: unzipMs,
