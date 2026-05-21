@@ -75,56 +75,48 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            widget.child,
-            if (_panelVisible) _buildPanel(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPanel(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
 
-    return Positioned(
-      right: _position.dx,
-      top: _position.dy + topPadding,
-      child: GestureDetector(
-        onPanUpdate: _onPanUpdate,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            width: 260,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blueGrey.shade900.withValues(alpha: 0.95),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        widget.child,
+        if (_panelVisible)
+          Positioned(
+            right: _position.dx,
+            top: _position.dy + topPadding,
+            child: GestureDetector(
+              onPanUpdate: _onPanUpdate,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: 260,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blueGrey.shade900.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 8),
+                      _buildComparison(),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 8),
-                _buildComparison(),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+      ],
     );
   }
 
