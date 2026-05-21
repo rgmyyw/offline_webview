@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:offline_webview/offline_webview.dart';
 
 import 'config.dart';
-import 'pages/home_page.dart';
+import 'pages/demo_menu_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,11 +78,30 @@ class DemoApp extends StatelessWidget {
     return MaterialApp(
       title: 'OfflineWebView Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2563EB),
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF212121),
+          elevation: 0,
+          centerTitle: true,
+          surfaceTintColor: Colors.transparent,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 0,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
       home: OfflineWebViewPreWarmer(
-        child: const HomePage(),
+        child: const DemoMenuPage(),
       ),
     );
   }

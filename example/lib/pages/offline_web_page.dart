@@ -2,25 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
 
 import '../widgets/draggable_monitor_panel.dart';
-import 'normal_web_page.dart';
 
-class CustomUrlWebPage extends StatelessWidget {
+class OfflineWebPage extends StatelessWidget {
   final String visitUrl;
-  final bool useOffline;
 
-  const CustomUrlWebPage({
+  const OfflineWebPage({
     super.key,
     required this.visitUrl,
-    this.useOffline = true,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    if (!useOffline) {
-      return NormalWebPage(url: visitUrl);
-    }
-    return _OfflineWebPage(visitUrl: visitUrl);
-  }
+@override
+  Widget build(BuildContext context) => _OfflineWebPage(visitUrl: visitUrl);
 }
 
 class _OfflineWebPage extends StatefulWidget {
@@ -54,7 +46,7 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
     // 注册各阶段耗时回调
     OfflineWebManager.instance.setTimingBlock((queryMs, downloadMs, unzipMs) {
       Logger.d(
-        'CustomUrlWebPage',
+        'OfflineWebPage',
         'timingBlock 触发 => 查询:$queryMs ms 下载:$downloadMs ms 解压:$unzipMs ms',
       );
       setState(() {
@@ -77,7 +69,6 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('离线包模式'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -107,7 +98,7 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
                 _status = '加载完成: ${url?.toString() ?? ""}';
                 _isLocalLoading =
                     url != null && LocalServer.isLocalServerUrl(url.toString());
-                Logger.i('CustomUrlWebPage', '加载完成 (耗时: ${elapsed}ms)');
+                Logger.i('OfflineWebPage', '加载完成 (耗时: ${elapsed}ms)');
               });
             },
             onReceivedError: (controller, error) {

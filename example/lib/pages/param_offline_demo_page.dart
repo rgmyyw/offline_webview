@@ -8,14 +8,14 @@ import '../widgets/draggable_monitor_panel.dart';
 ///
 /// OfflineWebView 组件会自动拦截此 URL，
 /// 如果离线包可用则加载离线包。
-class SimpleDemoPage extends StatefulWidget {
-  const SimpleDemoPage({super.key});
+class ParamOfflineDemoPage extends StatefulWidget {
+  const ParamOfflineDemoPage({super.key});
 
   @override
-  State<SimpleDemoPage> createState() => _SimpleDemoPageState();
+  State<ParamOfflineDemoPage> createState() => _ParamOfflineDemoPageState();
 }
 
-class _SimpleDemoPageState extends State<SimpleDemoPage> {
+class _ParamOfflineDemoPageState extends State<ParamOfflineDemoPage> {
   String _status = '加载中...';
   final _controller = OfflineWebViewController();
   DateTime? _startTime;
@@ -37,8 +37,7 @@ class _SimpleDemoPageState extends State<SimpleDemoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('简单模式'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('离线加载模式'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

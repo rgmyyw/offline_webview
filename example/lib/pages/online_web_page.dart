@@ -6,16 +6,16 @@ import '../widgets/draggable_monitor_panel.dart';
 
 /// 普通 WebView 页面，用于与离线加载进行速度对比。
 /// 此页面直接加载 URL，不使用离线包拦截。
-class NormalWebPage extends StatefulWidget {
+class OnlineWebPage extends StatefulWidget {
   final String url;
 
-  const NormalWebPage({super.key, this.url = 'https://www.baidu.com'});
+  const OnlineWebPage({super.key, this.url = 'https://www.baidu.com'});
 
   @override
-  State<NormalWebPage> createState() => _NormalWebPageState();
+  State<OnlineWebPage> createState() => _OnlineWebPageState();
 }
 
-class _NormalWebPageState extends State<NormalWebPage> {
+class _OnlineWebPageState extends State<OnlineWebPage> {
   String _status = '加载中...';
   late InAppWebViewController _controller;
   DateTime? _startTime;
@@ -26,7 +26,7 @@ class _NormalWebPageState extends State<NormalWebPage> {
     super.initState();
     _startTime = DateTime.now();
     _status = '正在加载: ${_buildUrl()}';
-    Logger.d('NormalWebPage', '页面创建, 开始计时');
+    Logger.d('OnlineWebPage', '页面创建, 开始计时');
   }
 
   String _buildUrl() {
@@ -38,7 +38,6 @@ class _NormalWebPageState extends State<NormalWebPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('网络加载'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -62,13 +61,13 @@ class _NormalWebPageState extends State<NormalWebPage> {
               final elapsed = DateTime.now()
                   .difference(_startTime!)
                   .inMilliseconds;
-              Logger.d('NormalWebPage', 'WebView创建: ${elapsed}ms');
+              Logger.d('OnlineWebPage', 'WebView创建: ${elapsed}ms');
             },
             onLoadStart: (controller, url) {
               final elapsed = DateTime.now()
                   .difference(_startTime!)
                   .inMilliseconds;
-              Logger.d('NormalWebPage', '开始加载: ${elapsed}ms');
+              Logger.d('OnlineWebPage', '开始加载: ${elapsed}ms');
               setState(() {
                 _status = '加载中: ${url?.toString() ?? ""}';
               });
@@ -77,7 +76,7 @@ class _NormalWebPageState extends State<NormalWebPage> {
               final elapsed = DateTime.now()
                   .difference(_startTime!)
                   .inMilliseconds;
-              Logger.i('NormalWebPage', '加载完成: ${elapsed}ms');
+              Logger.i('OnlineWebPage', '加载完成: ${elapsed}ms');
               setState(() {
                 _totalTime = elapsed;
                 _status = '加载完成: ${url?.toString() ?? ""}';

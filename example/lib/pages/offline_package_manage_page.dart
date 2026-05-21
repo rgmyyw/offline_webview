@@ -35,7 +35,10 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
         final size = await FileMgr.getPackageSize(name);
         final item = _BisInfo(bisName: name, version: version, sizeBytes: size);
         items.add(item);
-        Logger.d('OfflinePackageManage', '业务: $name, 版本: $version, 大小: ${item.sizeDisplay}');
+        Logger.d(
+          'OfflinePackageManage',
+          '业务: $name, 版本: $version, 大小: ${item.sizeDisplay}',
+        );
       }
       if (mounted) {
         setState(() {
@@ -131,117 +134,239 @@ class _OfflinePackageManagePageState extends State<OfflinePackageManagePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('离线包管理'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
-          TextButton.icon(
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            color: Colors.red,
             onPressed: _deleteAll,
-            icon: const Icon(Icons.delete_forever, color: Colors.red),
-            label: const Text(
-              '一键清理所有包',
-              style: TextStyle(color: Colors.red),
-            ),
+            tooltip: '一键清理所有包',
           ),
         ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.folder_off, size: 80, color: Colors.grey.shade300),
+                  const SizedBox(height: 16),
+                  Text(
+                    '暂无离线包数据',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            )
+          : Column(
+              children: [
+                // 统计信息
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Row(
                     children: [
-                      Icon(Icons.folder_off, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text('暂无离线包数据', style: TextStyle(color: Colors.grey)),
+                      Expanded(
+                        child: _StatCard(
+                          label: '离线包数量',
+                          value: '${_items.length}',
+                          icon: Icons.folder,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          label: '总大小',
+                          value: _totalSizeDisplay,
+                          icon: Icons.storage,
+                          color: Colors.green,
+                        ),
+                      ),
                     ],
                   ),
-                )
-              : Column(
-                  children: [
-                    // 统计信息
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      color: Colors.grey[100],
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _StatItem(
-                            label: '离线包数量',
-                            value: '${_items.length}',
-                            icon: Icons.folder,
-                          ),
-                          _StatItem(
-                            label: '总大小',
-                            value: _totalSizeDisplay,
-                            icon: Icons.storage,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // 列表
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _items.length,
-                        itemBuilder: (context, index) {
-                          final item = _items[index];
-                          return Card(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 4,
-                            ),
-                            child: ListTile(
-                              leading: const Icon(Icons.folder),
-                              title: Text(item.bisName),
-                              subtitle: Text(
-                                '版本: ${item.version}  大小: ${item.sizeDisplay}',
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => _deleteItem(item.bisName),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
                 ),
+                // 列表标题
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        '离线包列表',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${_items.length} 个包',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // 列表
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _items.length,
+                    itemBuilder: (context, index) {
+                      final item = _items[index];
+                      return _PackageCard(
+                        bisInfo: item,
+                        onDelete: () => _deleteItem(item.bisName),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
 
-class _StatItem extends StatelessWidget {
+class _StatCard extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final Color color;
 
-  const _StatItem({
+  const _StatCard({
     required this.label,
     required this.value,
     required this.icon,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+            ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PackageCard extends StatelessWidget {
+  final _BisInfo bisInfo;
+  final VoidCallback onDelete;
+
+  const _PackageCard({required this.bisInfo, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.archive, color: Colors.blue, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    bisInfo.bisName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      _InfoChip(label: bisInfo.version, color: Colors.purple),
+                      const SizedBox(width: 8),
+                      _InfoChip(label: bisInfo.sizeDisplay, color: Colors.teal),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              color: Colors.red.shade400,
+              onPressed: onDelete,
+            ),
+          ],
         ),
-      ],
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _InfoChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }

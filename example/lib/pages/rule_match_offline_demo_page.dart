@@ -8,14 +8,14 @@ import '../widgets/draggable_monitor_panel.dart';
 ///
 /// URL 中不包含 `offweb` 参数。而是通过 [OfflineRuleConfig]
 /// 设置按 host/path 模式匹配 URL 并自动注入 `offweb` 参数.
-class FullDemoPage extends StatefulWidget {
-  const FullDemoPage({super.key});
+class RuleMatchOfflineDemoPage extends StatefulWidget {
+  const RuleMatchOfflineDemoPage({super.key});
 
   @override
-  State<FullDemoPage> createState() => _FullDemoPageState();
+  State<RuleMatchOfflineDemoPage> createState() => _RuleMatchOfflineDemoPageState();
 }
 
-class _FullDemoPageState extends State<FullDemoPage> {
+class _RuleMatchOfflineDemoPageState extends State<RuleMatchOfflineDemoPage> {
   String _status = '加载中...';
   final _controller = OfflineWebViewController();
   DateTime? _startTime;
@@ -39,7 +39,6 @@ class _FullDemoPageState extends State<FullDemoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('规则匹配模式'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
