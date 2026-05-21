@@ -75,11 +75,17 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.child,
-        if (_panelVisible) _buildPanel(context),
-      ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            widget.child,
+            if (_panelVisible) _buildPanel(context),
+          ],
+        ),
+      ),
     );
   }
 
