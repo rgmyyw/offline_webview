@@ -100,8 +100,13 @@ class DemoApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
       ),
-      home: OfflineWebViewPreWarmer(
-        child: const DemoMenuPage(),
+      home: Stack(
+        children: [
+          OfflineWebViewPreWarmer(
+            child: const DemoMenuPage(),
+          ),
+          const FloatingPerformancePanel(),
+        ],
       ),
     );
   }
