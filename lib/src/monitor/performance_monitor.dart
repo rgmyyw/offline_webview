@@ -36,7 +36,7 @@ class PerformanceMonitor {
 
   // --- WebView 生命周期记录 ---
 
-  /// 记录 WebView 创建时间点
+  /// 记录 WebView 创建时间点（每个 WebView 只调用一次）
   void recordWebViewCreated() {
     _webViewCreatedMs = DateTime.now().millisecondsSinceEpoch;
   }
@@ -46,7 +46,10 @@ class PerformanceMonitor {
     _currentMode = mode;
     _currentUrl = url;
     _loadStartMs = DateTime.now().millisecondsSinceEpoch;
-    _resetAllState();
+    // 只重置本次加载相关的状态，保留 WebView 创建时间
+    _firstPaintMs = 0;
+    _loadCompleteMs = 0;
+    _resetOfflinePhase();
   }
 
   /// 记录首帧可见时间点
@@ -61,8 +64,9 @@ class PerformanceMonitor {
     _loadCompleteMs = DateTime.now().millisecondsSinceEpoch;
 
     // 计算各阶段耗时
-    final webViewCreated = _webViewCreatedMs > 0 ? _loadStartMs - _webViewCreatedMs : 0;
-    final loadStart = 0; // 相对于 loadStartMs 本身为 0
+    final webViewCreated = _webViewCreatedMs > 0 && _loadStartMs > _webViewCreatedMs
+        ? _loadStartMs - _webViewCreatedMs
+        : 0;
     final firstPaint = _firstPaintMs > _loadStartMs ? _firstPaintMs - _loadStartMs : 0;
     final loadComplete = _loadCompleteMs - _loadStartMs;
 
@@ -70,7 +74,7 @@ class PerformanceMonitor {
       mode: _currentMode,
       url: _currentUrl,
       webViewCreatedMs: webViewCreated,
-      loadStartMs: loadStart,
+      loadStartMs: 0, // 相对于 loadStartMs 本身为 0
       firstPaintMs: firstPaint,
       loadCompleteMs: loadComplete,
       totalMs: totalMs,
@@ -87,7 +91,7 @@ class PerformanceMonitor {
 
   // --- 离线阶段记录 ---
 
-  /// 记录离线阶段耗时
+  /// 记录离线阶段耗时（由 OfflineTaskManager 在包处理完成后调用）
   void recordOfflinePhase({
     required int queryMs,
     required int downloadMs,
@@ -102,13 +106,6 @@ class PerformanceMonitor {
     _querySuccess = querySuccess;
     _downloadSuccess = downloadSuccess;
     _unzipSuccess = unzipSuccess;
-  }
-
-  void _resetAllState() {
-    _webViewCreatedMs = 0;
-    _firstPaintMs = 0;
-    _loadCompleteMs = 0;
-    _resetOfflinePhase();
   }
 
   void _resetOfflinePhase() {
