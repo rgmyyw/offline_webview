@@ -36,11 +36,9 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
           ),
         ],
       ),
-      body: FloatingPerformancePanel(
-        child: OfflineWebView(
-          initialUrl: widget.visitUrl,
-          controller: _controller,
-        ),
+      body: OfflineWebView(
+        initialUrl: widget.visitUrl,
+        controller: _controller,
       ),
     );
   }
