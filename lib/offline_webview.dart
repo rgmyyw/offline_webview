@@ -28,6 +28,9 @@ export 'src/flow/replace_res_flow.dart';
 
 export 'src/monitor/flow_report_params.dart';
 export 'src/monitor/data_report.dart';
+export 'src/monitor/loading_timeline.dart';
+export 'src/monitor/performance_monitor.dart';
+export 'src/monitor/floating_performance_panel.dart';
 
 export 'src/server/local_server.dart';
 
