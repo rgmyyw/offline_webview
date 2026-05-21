@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import '../core/offline_const.dart';
 import '../core/offline_web_manager.dart';
 import '../match/default_matcher.dart';
+import '../monitor/performance_monitor.dart';
 import '../server/local_server.dart';
 import '../util/file_mgr.dart';
 import '../match/off_web_rule_util.dart';
@@ -332,6 +333,7 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         _controller.attach(controller);
         _proxy = OfflineWebViewProxyFactory.create(controller: _controller);
         _proxy!.initialize(widget.initialUrl, _resolvedUrl);
+        PerformanceMonitor.instance.recordWebViewCreated();
         _controller.setCurrentUrl(_resolvedUrl);
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {
@@ -367,6 +369,13 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         if (currentUrl.isNotEmpty) {
           _controller.setCurrentUrl(currentUrl);
         }
+
+        // 检测加载模式并记录
+        final isLocal = currentUrl.isNotEmpty &&
+            LocalServer.isLocalServerUrl(currentUrl);
+        final mode = isLocal ? LoadingMode.offline : LoadingMode.network;
+        PerformanceMonitor.instance.recordLoadStart(mode);
+
         _dataReport.notifyWebEvent(
           DataReportEvent.webviewWillRequest,
           url,
@@ -391,6 +400,7 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         if (!_loggedCommitVisible) {
           Logger.i('OfflineWebView', '首帧可见: ${_sw.elapsedMilliseconds}ms');
           _loggedCommitVisible = true;
+          PerformanceMonitor.instance.recordFirstPaint();
         }
       },
       onLoadStop: (controller, url) {
@@ -423,6 +433,7 @@ class _OfflineWebViewState extends State<OfflineWebView> {
           }
         }
         widget.onLoadStop?.call(controller, url);
+        PerformanceMonitor.instance.recordLoadComplete(_sw.elapsedMilliseconds);
         widget.onLoadTiming?.call(_sw.elapsedMilliseconds);
       },
       onReceivedError: (controller, request, error) {
