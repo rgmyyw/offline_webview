@@ -13,7 +13,7 @@ import 'performance_monitor.dart';
 /// ```
 ///
 /// 面板默认显示在右上角，可拖动。订阅 [PerformanceMonitor.timelineStream]
-/// 实时展示离线加载与网络加载的各阶段耗时对比。
+/// 实时展示加载各阶段耗时。
 class FloatingPerformancePanel extends StatefulWidget {
   /// 被包裹的子组件（通常是包含 WebView 的页面）
   final Widget child;
@@ -36,8 +36,8 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   late Offset _position;
   bool _panelVisible = true;
 
-  LoadingTimeline? _offlineTimeline;
-  LoadingTimeline? _networkTimeline;
+  /// 所有加载记录
+  final List<LoadingTimeline> _timelines = [];
 
   StreamSubscription<LoadingTimeline>? _subscription;
 
@@ -48,10 +48,10 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
     _subscription = PerformanceMonitor.instance.timelineStream.listen((tl) {
       if (mounted) {
         setState(() {
-          if (tl.isOffline) {
-            _offlineTimeline = tl;
-          } else {
-            _networkTimeline = tl;
+          _timelines.add(tl);
+          // 只保留最近 10 条记录
+          if (_timelines.length > 10) {
+            _timelines.removeAt(0);
           }
         });
       }
@@ -90,7 +90,8 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
               child: Material(
                 color: Colors.transparent,
                 child: Container(
-                  width: 260,
+                  width: 300,
+                  constraints: const BoxConstraints(maxHeight: 400),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.blueGrey.shade900.withValues(alpha: 0.95),
@@ -103,14 +104,16 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader(),
-                      const SizedBox(height: 8),
-                      _buildComparison(),
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 8),
+                        _buildTimelineList(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -143,55 +146,29 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
     );
   }
 
-  Widget _buildComparison() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _buildTimelineCard('离线', _offlineTimeline, Colors.green),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildTimelineCard('网络', _networkTimeline, Colors.blue),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimelineCard(
-    String label,
-    LoadingTimeline? tl,
-    Color accent,
-  ) {
-    if (tl == null) {
-      return Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: accent,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              '-',
-              style: TextStyle(fontSize: 12, color: Colors.white38),
-            ),
-          ],
+  Widget _buildTimelineList() {
+    if (_timelines.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          '等待加载...',
+          style: TextStyle(fontSize: 10, color: Colors.white38),
         ),
       );
     }
 
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: _timelines.reversed.map((tl) => _buildTimelineItem(tl)).toList(),
+    );
+  }
+
+  Widget _buildTimelineItem(LoadingTimeline tl) {
+    final accent = tl.isOffline ? Colors.green : Colors.blue;
+    final modeLabel = tl.isOffline ? '离线' : '网络';
+
     return Container(
+      margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
@@ -201,32 +178,66 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: accent,
-              fontWeight: FontWeight.w600,
-            ),
+          // 标题行
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  modeLabel,
+                  style: TextStyle(fontSize: 9, color: accent),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  tl.url,
+                  style: const TextStyle(fontSize: 9, color: Colors.white54),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                '${tl.totalMs}ms',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: accent,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          _buildMetricRow('总耗时', '${tl.totalMs}ms'),
-          if (tl.isOffline) ...[
-            _buildMetricRow('查询', '${tl.queryMs ?? 0}ms',
-                success: tl.querySuccess),
-            _buildMetricRow('下载', '${tl.downloadMs ?? 0}ms',
-                success: tl.downloadSuccess),
-            _buildMetricRow('解压', '${tl.unzipMs ?? 0}ms',
-                success: tl.unzipSuccess),
-          ],
-          _buildMetricRow('首帧', '${tl.firstPaintMs}ms'),
-          _buildMetricRow('完成', '${tl.loadCompleteMs}ms'),
+          const SizedBox(height: 6),
+          // 阶段耗时
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              _buildStageChip('WebView创建', '${tl.webViewCreatedMs}ms'),
+              _buildStageChip('开始加载', '${tl.loadStartMs}ms'),
+              _buildStageChip('首帧', '${tl.firstPaintMs}ms'),
+              _buildStageChip('加载完成', '${tl.loadCompleteMs}ms'),
+              if (tl.isOffline) ...[
+                _buildStageChip('查询', '${tl.queryMs ?? 0}ms',
+                    success: tl.querySuccess),
+                _buildStageChip('下载', '${tl.downloadMs ?? 0}ms',
+                    success: tl.downloadSuccess),
+                _buildStageChip('解压', '${tl.unzipMs ?? 0}ms',
+                    success: tl.unzipSuccess),
+              ],
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMetricRow(String label, String value, {bool? success}) {
+  Widget _buildStageChip(String label, String value, {bool? success}) {
     Color valueColor = Colors.white;
     if (success == true) {
       valueColor = Colors.greenAccent;
@@ -234,19 +245,23 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
       valueColor = Colors.orangeAccent;
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 2),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(4),
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            label,
-            style: const TextStyle(fontSize: 10, color: Colors.white54),
+            '$label: ',
+            style: const TextStyle(fontSize: 9, color: Colors.white54),
           ),
           Text(
             value,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 9,
               color: valueColor,
               fontFamily: 'monospace',
             ),

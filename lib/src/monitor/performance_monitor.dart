@@ -15,9 +15,10 @@ class PerformanceMonitor {
   /// 实时 timeline 流，Panel 订阅此 Stream
   Stream<LoadingTimeline> get timelineStream => _controller.stream;
 
-  // --- 离线加载状态 ---
+  // --- 加载状态 ---
 
   LoadingMode _currentMode = LoadingMode.network;
+  String _currentUrl = '';
   int _webViewCreatedMs = 0;
   int _loadStartMs = 0;
   int _firstPaintMs = 0;
@@ -41,8 +42,9 @@ class PerformanceMonitor {
   }
 
   /// 记录加载开始时间点，并设置加载模式
-  void recordLoadStart(LoadingMode mode) {
+  void recordLoadStart(LoadingMode mode, String url) {
     _currentMode = mode;
+    _currentUrl = url;
     _loadStartMs = DateTime.now().millisecondsSinceEpoch;
     _resetAllState();
   }
@@ -58,17 +60,20 @@ class PerformanceMonitor {
 
     _loadCompleteMs = DateTime.now().millisecondsSinceEpoch;
 
-    // 计算各阶段耗时（使用同一时间源，避免不一致）
+    // 计算各阶段耗时
     final webViewCreated = _webViewCreatedMs > 0 ? _loadStartMs - _webViewCreatedMs : 0;
+    final loadStart = 0; // 相对于 loadStartMs 本身为 0
     final firstPaint = _firstPaintMs > _loadStartMs ? _firstPaintMs - _loadStartMs : 0;
     final loadComplete = _loadCompleteMs - _loadStartMs;
 
     final timeline = LoadingTimeline(
       mode: _currentMode,
-      totalMs: totalMs,
+      url: _currentUrl,
       webViewCreatedMs: webViewCreated,
+      loadStartMs: loadStart,
       firstPaintMs: firstPaint,
       loadCompleteMs: loadComplete,
+      totalMs: totalMs,
       queryMs: _queryMs,
       downloadMs: _downloadMs,
       unzipMs: _unzipMs,
@@ -101,7 +106,6 @@ class PerformanceMonitor {
 
   void _resetAllState() {
     _webViewCreatedMs = 0;
-    _loadStartMs = 0;
     _firstPaintMs = 0;
     _loadCompleteMs = 0;
     _resetOfflinePhase();

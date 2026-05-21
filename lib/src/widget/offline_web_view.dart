@@ -375,7 +375,7 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         final isLocal = currentUrl.isNotEmpty &&
             LocalServer.isLocalServerUrl(currentUrl);
         final mode = isLocal ? LoadingMode.offline : LoadingMode.network;
-        PerformanceMonitor.instance.recordLoadStart(mode);
+        PerformanceMonitor.instance.recordLoadStart(mode, currentUrl);
 
         _dataReport.notifyWebEvent(
           DataReportEvent.webviewWillRequest,

@@ -1,22 +1,25 @@
-/// 加载模式
-enum LoadingMode { offline, network }
-
 /// 单次加载的完整时序数据
 class LoadingTimeline {
   /// 加载模式
   final LoadingMode mode;
 
-  /// WebView 总耗时（从创建到加载完成）
-  final int totalMs;
+  /// 页面地址
+  final String url;
 
-  /// WebView 创建到加载开始的耗时
+  /// WebView 创建耗时（从组件创建到 WebView 创建好）
   final int webViewCreatedMs;
+
+  /// URL 开始加载耗时
+  final int loadStartMs;
 
   /// 首帧可见耗时
   final int firstPaintMs;
 
   /// 页面加载完成耗时
   final int loadCompleteMs;
+
+  /// 总耗时（从 WebView 创建到加载完成）
+  final int totalMs;
 
   /// 离线模式阶段耗时（仅 offline 模式有值）
   final int? queryMs;
@@ -30,10 +33,12 @@ class LoadingTimeline {
 
   const LoadingTimeline({
     required this.mode,
-    required this.totalMs,
+    required this.url,
     this.webViewCreatedMs = 0,
+    this.loadStartMs = 0,
     this.firstPaintMs = 0,
     this.loadCompleteMs = 0,
+    this.totalMs = 0,
     this.queryMs,
     this.downloadMs,
     this.unzipMs,
@@ -46,9 +51,9 @@ class LoadingTimeline {
 
   @override
   String toString() {
-    return 'LoadingTimeline(mode: $mode, totalMs: $totalMs, '
-        'webViewCreated: $webViewCreatedMs, firstPaint: $firstPaintMs, '
-        'loadComplete: $loadCompleteMs, '
+    return 'LoadingTimeline(mode: $mode, url: $url, '
+        'webView: $webViewCreatedMs, start: $loadStartMs, '
+        'firstPaint: $firstPaintMs, complete: $loadCompleteMs, total: $totalMs, '
         'query: $queryMs, download: $downloadMs, unzip: $unzipMs)';
   }
 }
