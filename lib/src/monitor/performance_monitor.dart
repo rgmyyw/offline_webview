@@ -44,7 +44,7 @@ class PerformanceMonitor {
   void recordLoadStart(LoadingMode mode) {
     _currentMode = mode;
     _loadStartMs = DateTime.now().millisecondsSinceEpoch;
-    _resetOfflinePhase();
+    _resetAllState();
   }
 
   /// 记录首帧可见时间点
@@ -54,16 +54,21 @@ class PerformanceMonitor {
 
   /// 记录页面加载完成，并发送完整 Timeline 到 Stream
   void recordLoadComplete(int totalMs) {
+    if (_loadStartMs == 0) return; // guard against missing recordLoadStart
+
     _loadCompleteMs = DateTime.now().millisecondsSinceEpoch;
+
+    // 计算各阶段耗时（使用同一时间源，避免不一致）
+    final webViewCreated = _webViewCreatedMs > 0 ? _loadStartMs - _webViewCreatedMs : 0;
+    final firstPaint = _firstPaintMs > _loadStartMs ? _firstPaintMs - _loadStartMs : 0;
+    final loadComplete = _loadCompleteMs - _loadStartMs;
 
     final timeline = LoadingTimeline(
       mode: _currentMode,
       totalMs: totalMs,
-      webViewCreatedMs: _webViewCreatedMs > 0
-          ? _loadStartMs - _webViewCreatedMs
-          : 0,
-      firstPaintMs: _firstPaintMs > 0 ? _firstPaintMs - _loadStartMs : 0,
-      loadCompleteMs: _loadCompleteMs - _loadStartMs,
+      webViewCreatedMs: webViewCreated,
+      firstPaintMs: firstPaint,
+      loadCompleteMs: loadComplete,
       queryMs: _queryMs,
       downloadMs: _downloadMs,
       unzipMs: _unzipMs,
@@ -92,6 +97,14 @@ class PerformanceMonitor {
     _querySuccess = querySuccess;
     _downloadSuccess = downloadSuccess;
     _unzipSuccess = unzipSuccess;
+  }
+
+  void _resetAllState() {
+    _webViewCreatedMs = 0;
+    _loadStartMs = 0;
+    _firstPaintMs = 0;
+    _loadCompleteMs = 0;
+    _resetOfflinePhase();
   }
 
   void _resetOfflinePhase() {
