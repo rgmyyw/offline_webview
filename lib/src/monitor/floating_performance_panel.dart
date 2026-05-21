@@ -3,12 +3,29 @@ import 'package:flutter/material.dart';
 import 'loading_timeline.dart';
 import 'performance_monitor.dart';
 
-/// 可拖动的性能监控悬浮面板.
+/// 包裹子组件并在上面显示性能监控面板的包装器.
 ///
-/// 默认固定在右上角，通过 GestureDetector 拖动位置。
-/// 订阅 [PerformanceMonitor.timelineStream] 展示实时数据。
+/// 使用方式：
+/// ```dart
+/// FloatingPerformancePanel(
+///   child: SomePageWithWebView(),
+/// )
+/// ```
+///
+/// 面板默认显示在右上角，可拖动。订阅 [PerformanceMonitor.timelineStream]
+/// 实时展示离线加载与网络加载的各阶段耗时对比。
 class FloatingPerformancePanel extends StatefulWidget {
-  const FloatingPerformancePanel({super.key});
+  /// 被包裹的子组件（通常是包含 WebView 的页面）
+  final Widget child;
+
+  /// 面板初始位置偏移量（默认右上角）
+  final Offset initialOffset;
+
+  const FloatingPerformancePanel({
+    super.key,
+    required this.child,
+    this.initialOffset = const Offset(16, 60),
+  });
 
   @override
   State<FloatingPerformancePanel> createState() =>
@@ -16,8 +33,8 @@ class FloatingPerformancePanel extends StatefulWidget {
 }
 
 class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
-  Offset _position = const Offset(16, 60);
-  bool _visible = true;
+  late Offset _position;
+  bool _panelVisible = true;
 
   LoadingTimeline? _offlineTimeline;
   LoadingTimeline? _networkTimeline;
@@ -27,14 +44,17 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   @override
   void initState() {
     super.initState();
+    _position = widget.initialOffset;
     _subscription = PerformanceMonitor.instance.timelineStream.listen((tl) {
-      setState(() {
-        if (tl.isOffline) {
-          _offlineTimeline = tl;
-        } else {
-          _networkTimeline = tl;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (tl.isOffline) {
+            _offlineTimeline = tl;
+          } else {
+            _networkTimeline = tl;
+          }
+        });
+      }
     });
   }
 
@@ -55,11 +75,20 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_visible) return const SizedBox.shrink();
+    return Stack(
+      children: [
+        widget.child,
+        if (_panelVisible) _buildPanel(context),
+      ],
+    );
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
 
     return Positioned(
       right: _position.dx,
-      top: _position.dy,
+      top: _position.dy + topPadding,
       child: GestureDetector(
         onPanUpdate: _onPanUpdate,
         child: Material(
@@ -109,7 +138,7 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
           ),
         ),
         GestureDetector(
-          onTap: () => setState(() => _visible = false),
+          onTap: () => setState(() => _panelVisible = false),
           child: const Icon(Icons.close, size: 16, color: Colors.white38),
         ),
       ],

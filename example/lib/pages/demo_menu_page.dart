@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:offline_webview/offline_webview.dart';
 
 import 'param_offline_demo_page.dart';
 import 'rule_match_offline_demo_page.dart';
@@ -16,26 +17,31 @@ class DemoMenuPage extends StatelessWidget {
         'title': '离线加载模式',
         'subtitle': 'URL带offweb参数，直接加载离线包',
         'page': const ParamOfflineDemoPage(),
+        'useMonitor': true,
       },
       {
         'title': '规则匹配模式',
         'subtitle': '自动匹配URL并注入offweb参数',
         'page': const RuleMatchOfflineDemoPage(),
+        'useMonitor': true,
       },
       {
         'title': '调试工具',
         'subtitle': '离线包管理、URL匹配、缓存清理等',
         'page': const DevToolPage(),
+        'useMonitor': false,
       },
       {
         'title': '服务调试',
         'subtitle': '测试本地服务端点是否正常工作',
         'page': const ServerDebugPage(),
+        'useMonitor': false,
       },
       {
         'title': '自定义配置',
         'subtitle': '自定义离线包下载地址和访问地址',
         'page': const OfflineConfigPage(),
+        'useMonitor': false,
       },
     ];
 
@@ -47,6 +53,9 @@ class DemoMenuPage extends StatelessWidget {
         itemCount: demos.length,
         itemBuilder: (context, index) {
           final demo = demos[index];
+          final useMonitor = demo['useMonitor'] as bool;
+          final page = demo['page'] as Widget;
+
           return ListTile(
             title: Text(demo['title'] as String),
             subtitle: Text(demo['subtitle'] as String),
@@ -58,7 +67,11 @@ class DemoMenuPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => demo['page'] as Widget),
+                MaterialPageRoute(
+                  builder: (_) => useMonitor
+                      ? FloatingPerformancePanel(child: page)
+                      : page,
+                ),
               );
             },
           );

@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:offline_webview/offline_webview.dart';
 import 'package:path/path.dart' as p;
 
 import '../core/offline_const.dart';
