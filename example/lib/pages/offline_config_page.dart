@@ -65,7 +65,9 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
     return Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => OfflineWebPage(visitUrl: visitUrl),
+        builder: (_) => FloatingPerformancePanel(
+          child: OfflineWebPage(visitUrl: visitUrl),
+        ),
       ),
     );
   }
@@ -151,7 +153,9 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => OfflineWebPage(visitUrl: visitUrl),
+          builder: (_) => FloatingPerformancePanel(
+            child: OfflineWebPage(visitUrl: visitUrl),
+          ),
         ),
       );
     } catch (e) {
