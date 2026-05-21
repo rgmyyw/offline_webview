@@ -11,6 +11,7 @@ import '../core/offline_const.dart';
 import '../core/offline_web_manager.dart';
 import '../match/default_matcher.dart';
 import '../monitor/performance_monitor.dart';
+import '../monitor/loading_timeline.dart';
 import '../server/local_server.dart';
 import '../util/file_mgr.dart';
 import '../match/off_web_rule_util.dart';

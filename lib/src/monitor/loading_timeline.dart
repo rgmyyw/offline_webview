@@ -1,3 +1,6 @@
+/// 加载模式
+enum LoadingMode { offline, network }
+
 /// 单次加载的完整时序数据
 class LoadingTimeline {
   /// 加载模式
