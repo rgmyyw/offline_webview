@@ -3,27 +3,32 @@ import 'package:flutter/material.dart';
 import 'loading_timeline.dart';
 import 'performance_monitor.dart';
 
-/// 包裹子组件并在上面显示性能监控面板的包装器.
+/// 性能监控悬浮面板.
 ///
-/// 使用方式：
+/// 作为包装器使用：
 /// ```dart
 /// FloatingPerformancePanel(
 ///   child: SomePageWithWebView(),
 /// )
 /// ```
 ///
+/// 或单独使用（由 OfflineWebView 内部嵌入）：
+/// ```dart
+/// FloatingPerformancePanel()
+/// ```
+///
 /// 面板默认显示在右上角，可拖动。订阅 [PerformanceMonitor.timelineStream]
 /// 实时展示加载各阶段耗时。
 class FloatingPerformancePanel extends StatefulWidget {
-  /// 被包裹的子组件（通常是包含 WebView 的页面）
-  final Widget child;
+  /// 被包裹的子组件（可选，如果不提供则只显示面板本身）
+  final Widget? child;
 
   /// 面板初始位置偏移量（默认右上角）
   final Offset initialOffset;
 
   const FloatingPerformancePanel({
     super.key,
-    required this.child,
+    this.child,
     this.initialOffset = const Offset(16, 60),
   });
 
@@ -77,10 +82,10 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
 
-    return Stack(
+    final content = Stack(
       fit: StackFit.expand,
       children: [
-        widget.child,
+        if (widget.child != null) widget.child!,
         if (_panelVisible)
           Positioned(
             right: _position.dx,
@@ -121,6 +126,8 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
           ),
       ],
     );
+
+    return content;
   }
 
   Widget _buildHeader() {
