@@ -476,11 +476,6 @@ class _OfflineWebViewState extends State<OfflineWebView> {
               ),
             ),
           ),
-        const Positioned(
-          right: 16,
-          top: 60,
-          child: FloatingPerformancePanel(),
-        ),
       ],
     );
     Logger.d(

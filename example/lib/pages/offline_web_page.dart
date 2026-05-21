@@ -4,10 +4,7 @@ import 'package:offline_webview/offline_webview.dart';
 class OfflineWebPage extends StatelessWidget {
   final String visitUrl;
 
-  const OfflineWebPage({
-    super.key,
-    required this.visitUrl,
-  });
+  const OfflineWebPage({super.key, required this.visitUrl});
 
   @override
   Widget build(BuildContext context) => _OfflineWebPage(visitUrl: visitUrl);
@@ -62,9 +59,7 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
           });
         },
         onLoadStop: (controller, url) {
-          final elapsed = DateTime.now()
-              .difference(_startTime!)
-              .inMilliseconds;
+          final elapsed = DateTime.now().difference(_startTime!).inMilliseconds;
           setState(() {
             _status = '加载完成: ${url?.toString() ?? ""}';
             _isLocalLoading =
