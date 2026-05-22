@@ -29,3 +29,4 @@ build/
 tool/packages/__pycache__
 tool/packages/*.zip
 !tool/packages/test-package.zip
+docs/superpowers

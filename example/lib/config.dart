@@ -4,7 +4,7 @@ class AppConfig {
   static const String testBisName = 'test-offline-package';
 
   /// 离线包服务器主机（Python 服务）。
-  static const String serverHost = 'localhost';
+  static const String serverHost = '192.168.1.62';
 
   ///  服务端口。
   static const int serverPort = 18730;

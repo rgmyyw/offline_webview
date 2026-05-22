@@ -24,8 +24,10 @@ class _ForceUpdatePageState extends State<ForceUpdatePage> {
   @override
   void initState() {
     super.initState();
-    final l10n = AppLocalizations.of(context)!;
-    _addLog(l10n.readyEnterBisNameClickStart, isInfo: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final l10n = AppLocalizations.of(context)!;
+      _addLog(l10n.readyEnterBisNameClickStart, isInfo: true);
+    });
     _loadAvailableBisNames();
   }
 

@@ -1,0 +1,33 @@
+default_platform(:ios)
+
+EXAMPLE_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', 'example'))
+
+platform :ios do
+  desc "Build iOS IPA and upload to Pgyer"
+  lane :build_ios do
+    Dir.chdir(EXAMPLE_DIR) do
+      sh("fvm flutter build ipa --release --export-method development")
+    end
+
+    ipa_path = Dir.glob(File.join(EXAMPLE_DIR, 'build', 'ios', 'ipa', '*.ipa')).first
+    UI.user_error!("IPA not found") unless ipa_path
+    UI.success("IPA built: #{ipa_path}")
+
+    pgyer(api_key: ENV["PGYER_API_KEY"], ipa: ipa_path)
+  end
+end
+
+platform :android do
+  desc "Build Android APK and upload to Pgyer"
+  lane :build_android do
+    Dir.chdir(EXAMPLE_DIR) do
+      sh("fvm flutter build apk --release")
+    end
+
+    apk_path = File.join(EXAMPLE_DIR, 'build', 'app', 'outputs', 'flutter-apk', 'app-release.apk')
+    UI.user_error!("APK not found") unless File.exist?(apk_path)
+    UI.success("APK built: #{apk_path}")
+
+    pgyer(api_key: ENV["PGYER_API_KEY"], apk: apk_path)
+  end
+end

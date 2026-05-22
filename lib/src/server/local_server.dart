@@ -36,7 +36,7 @@ class LocalServer {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       _servers[bisName] = server;
       _ports[bisName] = server.port;
-      Logger.i(tag, '$bisName 服务器启动: localhost:${server.port}');
+      Logger.i(tag, '$bisName 服务器启动: http://localhost:${server.port}');
 
       server.listen(
         (request) => _handleRequest(request, bisName),

@@ -8,6 +8,23 @@ from urllib.parse import urlparse, parse_qs
 HOST = '0.0.0.0'
 PORT = 18730
 
+# 客户端访问地址（生成下载 URL 用）。设为 None 则自动获取局域网 IP。
+SERVER_HOST = None
+
+
+def _get_lan_ip():
+    """获取本机局域网 IP 地址。"""
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # 不需要真正发包，只是让 OS 选一个到达目标的网卡
+        s.connect(('8.8.8.8', 80))
+        return s.getsockname()[0]
+    except Exception:
+        return '127.0.0.1'
+    finally:
+        s.close()
+
 # Get the directory where this script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PACKAGES_DIR = os.path.join(SCRIPT_DIR, 'packages')
@@ -16,6 +33,8 @@ PACKAGES_DIR = os.path.join(SCRIPT_DIR, 'packages')
 PACKAGES = {}
 # Version registry: bisName -> version
 VERSIONS = {}
+# 客户端可访问的主机地址（启动时自动检测）
+effective_host = '127.0.0.1'
 
 
 def _scan_packages():
@@ -231,7 +250,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 if offline_zip_ver == '0' or offline_zip_ver != server_version:
                     zip_path = _get_zip_path(bis_name)
                     if zip_path:
-                        download_url = f'http://{self.server.server_address[0]}:{PORT}/package?bisName={bis_name}'
+                        download_url = f'http://{effective_host}:{PORT}/package?bisName={bis_name}'
                     else:
                         download_url = ''
                     body = json.dumps({
@@ -329,7 +348,9 @@ if __name__ == '__main__':
     import time
     time.sleep(0.5)
 
-    print(f'Download server running at http://0.0.0.0:{PORT}')
+    effective_host = SERVER_HOST if SERVER_HOST else _get_lan_ip()
+
+    print(f'Download server running at http://{effective_host}:{PORT}')
     print(f'Registered packages: {list(PACKAGES.keys())}')
     print(f'Endpoints:')
     print(f'  GET /                     - 服务信息')
