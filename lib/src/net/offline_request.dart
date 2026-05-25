@@ -15,4 +15,10 @@ abstract class IOfflineRequest {
   /// 结果通过[callback]传递。
   void requestPackageInfo(
       String bisName, String version, RequestCallback<OfflinePackageInfo> callback);
+
+  /// 请求服务器上所有可用的离线包业务名称列表。
+  /// 结果通过[callback]传递。默认返回空列表（不支持全量查询）。
+  void requestAllBisNames(RequestCallback<List<String>> callback) {
+    callback.onSuccess(const []);
+  }
 }

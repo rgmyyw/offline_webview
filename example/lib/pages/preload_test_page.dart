@@ -24,13 +24,22 @@ class _PreloadTestPageState extends State<PreloadTestPage> {
   bool _isLoading = false;
   final List<_PreloadLogEntry> _logs = [];
   List<String> _availableBisNames = [];
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    final l10n = AppLocalizations.of(context)!;
-    _addLog(l10n.readyEnterBisNameClickStartPreload, isInfo: true);
-    _loadAvailableBisNames();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      final l10n = AppLocalizations.of(context)!;
+      _addLog(l10n.readyEnterBisNameClickStartPreload, isInfo: true);
+      _loadAvailableBisNames();
+    }
   }
 
   Future<void> _loadAvailableBisNames() async {

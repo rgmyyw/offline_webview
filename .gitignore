@@ -28,5 +28,5 @@ build/
 
 tool/packages/__pycache__
 tool/packages/*.zip
-!tool/packages/test-package.zip
+!tool/packages/test-offline-package.zip
 docs/superpowers

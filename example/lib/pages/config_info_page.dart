@@ -36,6 +36,7 @@ class _ConfigInfoPageState extends State<ConfigInfoPage> {
           'env': manager.env,
           'appVersion': manager.appVersion,
           'config.isOpen': manager.config.isOpen.toString(),
+          'preDownloadAll': manager.config.preDownloadAll.toString(),
           'preDownloadList': manager.config.preDownloadList.toString(),
           'disableList': manager.config.disableList.toString(),
           'matcherType': manager.matcher.runtimeType.toString(),

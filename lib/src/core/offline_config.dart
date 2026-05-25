@@ -3,11 +3,13 @@
 /// 控制哪些业务模块启用离线支持，哪些被禁用。
 class OfflineConfig {
   final bool isOpen;
+  final bool preDownloadAll;
   final Set<String> preDownloadList;
   final Set<String> disableList;
 
   const OfflineConfig({
     this.isOpen = false,
+    this.preDownloadAll = false,
     this.preDownloadList = const {},
     this.disableList = const {},
   });
@@ -22,12 +24,19 @@ class OfflineConfig {
 /// 可以添加预下载和禁用条目。
 class OfflineConfigBuilder {
   bool _isOpen = false;
+  bool _preDownloadAll = false;
   final Set<String> _preDownloadList = {};
   final Set<String> _disableList = {};
 
   /// 设置离线Web是否启用。
   OfflineConfigBuilder isOpen(bool value) {
     _isOpen = value;
+    return this;
+  }
+
+  /// 设置是否预下载服务器上所有可用的离线包。
+  OfflineConfigBuilder preDownloadAll(bool value) {
+    _preDownloadAll = value;
     return this;
   }
 
@@ -59,6 +68,7 @@ class OfflineConfigBuilder {
   OfflineConfig build() {
     return OfflineConfig(
       isOpen: _isOpen,
+      preDownloadAll: _preDownloadAll,
       preDownloadList: Set.unmodifiable(_preDownloadList),
       disableList: Set.unmodifiable(_disableList),
     );

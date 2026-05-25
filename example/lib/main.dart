@@ -11,10 +11,10 @@ import 'pages/demo_menu_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 构建带预下载的配置
+  // 构建带预下载的配置（preDownloadAll 下载服务器上所有可用包）
   final config = OfflineConfigBuilder()
       .isOpen(true)
-      .addPreDownload(AppConfig.testBisName)
+      .preDownloadAll(true)
       .build();
 
   // 构建参数
@@ -57,6 +57,30 @@ class LocalServerRequest extends IOfflineRequest {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         final packageInfo = OfflinePackageInfo.fromJson(json);
         callback.onSuccess(packageInfo);
+      } else {
+        callback.onFail(
+          Exception(
+            'Server returned status ${response.statusCode}: ${response.body}',
+          ),
+        );
+      }
+    } catch (e) {
+      callback.onFail(e);
+    }
+  }
+
+  @override
+  void requestAllBisNames(RequestCallback<List<String>> callback) async {
+    try {
+      final url = Uri.parse(AppConfig.baseUrl);
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final packages = (json['packages'] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList();
+        callback.onSuccess(packages);
       } else {
         callback.onFail(
           Exception(

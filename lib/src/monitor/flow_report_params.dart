@@ -10,12 +10,16 @@ class FlowReportParams {
   int downloadEndTime;
   int unzipStartTime;
   int unzipEndTime;
+  int replaceStartTime;
+  int replaceEndTime;
   bool querySuccess;
   bool downloadSuccess;
   bool unzipSuccess;
+  bool replaceSuccess;
   String queryMessage;
   String downloadMessage;
   String unzipMessage;
+  String replaceMessage;
   double zipSize;
   bool isBrokenDown;
 
@@ -27,12 +31,16 @@ class FlowReportParams {
     this.downloadEndTime = 0,
     this.unzipStartTime = 0,
     this.unzipEndTime = 0,
+    this.replaceStartTime = 0,
+    this.replaceEndTime = 0,
     this.querySuccess = false,
     this.downloadSuccess = false,
     this.unzipSuccess = false,
+    this.replaceSuccess = false,
     this.queryMessage = '',
     this.downloadMessage = '',
     this.unzipMessage = '',
+    this.replaceMessage = '',
     this.zipSize = 0,
     this.isBrokenDown = false,
   });
@@ -77,6 +85,18 @@ class FlowReportParams {
     unzipEndTime = DateTime.now().millisecondsSinceEpoch;
   }
 
+  /// 标记替换阶段开始。
+  void replaceStart() {
+    replaceStartTime = DateTime.now().millisecondsSinceEpoch;
+  }
+
+  /// 标记替换阶段结束并设置成功状态。
+  void replaceEnd(bool success, [String message = '']) {
+    replaceSuccess = success;
+    replaceMessage = message;
+    replaceEndTime = DateTime.now().millisecondsSinceEpoch;
+  }
+
   /// 设置下载的zip文件大小。
   void zipSizeSet(double size) {
     zipSize = size;
@@ -97,17 +117,22 @@ class FlowReportParams {
       'downloadEndTime': downloadEndTime,
       'unzipStartTime': unzipStartTime,
       'unzipEndTime': unzipEndTime,
+      'replaceStartTime': replaceStartTime,
+      'replaceEndTime': replaceEndTime,
       'querySuccess': querySuccess,
       'downloadSuccess': downloadSuccess,
       'unzipSuccess': unzipSuccess,
+      'replaceSuccess': replaceSuccess,
       'queryMessage': queryMessage,
       'downloadMessage': downloadMessage,
       'unzipMessage': unzipMessage,
+      'replaceMessage': replaceMessage,
       'zipSize': zipSize,
       'isBrokenDown': isBrokenDown,
       'queryDuration': queryEndTime - queryStartTime,
       'downloadDuration': downloadEndTime - downloadStartTime,
       'unzipDuration': unzipEndTime - unzipStartTime,
+      'replaceDuration': replaceEndTime - replaceStartTime,
     };
   }
 }

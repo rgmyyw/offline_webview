@@ -15,17 +15,14 @@ class FileUtil {
     try {
       final bytes = await File(zipPath).readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
-      Logger.d(tag, '解压ZIP到: $destDir, 文件数量: ${archive.files.length}');
+      Logger.d(tag, '解压ZIP: ${archive.files.length}个文件 -> $destDir');
 
       for (final file in archive) {
         final filePath = '$destDir/${file.name}';
-        Logger.d(tag, '解压文件: $filePath, 大小: ${file.size} bytes');
         if (file.isFile) {
           final outputFile = File(filePath);
           await outputFile.parent.create(recursive: true);
-          // file.content 已经是 List<int>，直接写入
           await outputFile.writeAsBytes(file.content as List<int>);
-          Logger.d(tag, '文件写入完成: $filePath');
         } else {
           await Directory(filePath).create(recursive: true);
         }
@@ -62,22 +59,10 @@ class FileUtil {
     try {
       final parentPath = entity.parent.path;
       final newPath = '$parentPath/$newName';
-      Logger.d(
-        tag,
-        'rename开始 - entity.path: ${entity.path}, newPath: $newPath',
-      );
-      Logger.d(tag, '重命名 - 文件存在: ${entity.existsSync()}');
       entity.renameSync(newPath);
-      Logger.d(
-        tag,
-        '重命名成功 - 新路径: $newPath, 存在: ${FileSystemEntity.typeSync(newPath) != FileSystemEntityType.notFound}',
-      );
       return true;
-    } catch (e, stack) {
-      Logger.e(
-        tag,
-        'rename失败 - entity.path: ${entity.path}, newName: $newName, error: $e, stack: $stack',
-      );
+    } catch (e) {
+      Logger.e(tag, 'rename失败: ${entity.path} -> $newName, error: $e');
       return false;
     }
   }
