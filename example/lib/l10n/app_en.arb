@@ -937,5 +937,13 @@
         "type": "String"
       }
     }
+  },
+  "performancePanelSwitch": "Performance Panel",
+  "@performancePanelSwitch": {
+    "description": "Switch tile title"
+  },
+  "performancePanelSwitchDesc": "Show floating performance monitor overlay",
+  "@performancePanelSwitchDesc": {
+    "description": "Switch tile subtitle"
   }
 }

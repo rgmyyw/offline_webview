@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:offline_webview/offline_webview.dart';
 
 import '../l10n/app_localizations.dart';
 import 'config_info_page.dart';
@@ -8,9 +9,14 @@ import 'offline_package_manage_page.dart';
 import 'preload_test_page.dart';
 import 'url_match_test_page.dart';
 
-class DevToolPage extends StatelessWidget {
+class DevToolPage extends StatefulWidget {
   const DevToolPage({super.key});
 
+  @override
+  State<DevToolPage> createState() => _DevToolPageState();
+}
+
+class _DevToolPageState extends State<DevToolPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -21,6 +27,26 @@ class DevToolPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // 性能监控面板开关
+          Card(
+            child: SwitchListTile(
+              secondary: Icon(
+                Icons.speed,
+                color: FloatingPerformancePanel.enabled
+                    ? Colors.green
+                    : Colors.grey,
+              ),
+              title: Text(l10n.performancePanelSwitch),
+              subtitle: Text(l10n.performancePanelSwitchDesc),
+              value: FloatingPerformancePanel.enabled,
+              onChanged: (value) {
+                setState(() {
+                  FloatingPerformancePanel.enabled = value;
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
           _ToolCard(
             icon: Icons.folder_open,
             title: l10n.offlinePackageManagement,

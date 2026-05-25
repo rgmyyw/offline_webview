@@ -33,11 +33,21 @@ class OfflineWebViewController {
   /// 原始（非离线）URL。
   String get originalUrl => _originalUrl;
 
+  bool _reloadPending = false;
+
+  /// 消耗刷新标志，调用后自动重置。
+  bool consumeReloadFlag() {
+    final was = _reloadPending;
+    _reloadPending = false;
+    return was;
+  }
+
   /// 重新加载离线Web内容。
   Future<void> reloadOfflineWeb() async {
     final controller = _webController;
     if (controller == null || _currentUrl.isEmpty) return;
 
+    _reloadPending = true;
     await controller.loadUrl(
       urlRequest: URLRequest(url: WebUri(_currentUrl)),
     );

@@ -643,4 +643,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String queryUrl(String url) {
     return '查询URL: $url';
   }
+
+  @override
+  String get performancePanelSwitch => '性能监控面板';
+
+  @override
+  String get performancePanelSwitchDesc => '显示悬浮性能监控浮层';
 }

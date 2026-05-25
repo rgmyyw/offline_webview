@@ -348,6 +348,12 @@ class _OfflineWebViewState extends State<OfflineWebView> {
         return NavigationActionPolicy.ALLOW;
       },
       onLoadStart: (controller, url) {
+        // 用户主动刷新时重置计时器，重定向时不重置
+        if (_controller.consumeReloadFlag()) {
+          _sw.reset();
+          _loggedCommitVisible = false;
+          _lastProgress = 0;
+        }
         if (!_loggedLoadStart) {
           Logger.d('OfflineWebView', 'onLoadStart: ${_sw.elapsedMilliseconds}ms');
           _loggedLoadStart = true;

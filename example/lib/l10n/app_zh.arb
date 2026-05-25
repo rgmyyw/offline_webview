@@ -187,5 +187,7 @@
   "downloadCompleteNewVersion": "下载完成，新版本: {version}",
   "downloadComplete": "下载完成",
   "downloadFailedError": "下载失败: {error}",
-  "queryUrl": "查询URL: {url}"
+  "queryUrl": "查询URL: {url}",
+  "performancePanelSwitch": "性能监控面板",
+  "performancePanelSwitchDesc": "显示悬浮性能监控浮层"
 }

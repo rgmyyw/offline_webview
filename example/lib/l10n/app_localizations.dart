@@ -1225,6 +1225,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Query URL: {url}'**
   String queryUrl(String url);
+
+  /// Switch tile title
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Panel'**
+  String get performancePanelSwitch;
+
+  /// Switch tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Show floating performance monitor overlay'**
+  String get performancePanelSwitchDesc;
 }
 
 class _AppLocalizationsDelegate

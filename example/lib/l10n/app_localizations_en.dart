@@ -660,4 +660,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String queryUrl(String url) {
     return 'Query URL: $url';
   }
+
+  @override
+  String get performancePanelSwitch => 'Performance Panel';
+
+  @override
+  String get performancePanelSwitchDesc =>
+      'Show floating performance monitor overlay';
 }

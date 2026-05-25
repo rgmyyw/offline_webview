@@ -6,7 +6,7 @@ platform :ios do
   desc "Build iOS IPA and upload to Pgyer"
   lane :build_ios do
     Dir.chdir(EXAMPLE_DIR) do
-      sh("fvm flutter build ipa --release --export-method development")
+      sh("fvm flutter build ipa --release --export-method ad-hoc")
     end
 
     ipa_path = Dir.glob(File.join(EXAMPLE_DIR, 'build', 'ios', 'ipa', '*.ipa')).first

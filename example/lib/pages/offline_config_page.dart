@@ -260,8 +260,12 @@ class _OfflineConfigPageState extends State<OfflineConfigPage> {
                       hint: Text(l10n.pleaseSelectPackage),
                       items: _availablePackages
                           .map((pkg) => DropdownMenuItem(
-                              value: pkg, child: Text(pkg)))
+                              value: pkg,
+                              child: Text(pkg,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1)))
                           .toList(),
+                      isExpanded: true,
                       onChanged: _onPackageSelected,
                     ),
                   ],

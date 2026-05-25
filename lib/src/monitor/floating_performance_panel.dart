@@ -20,6 +20,9 @@ import 'performance_monitor.dart';
 /// 面板默认显示在右上角，可拖动。订阅 [PerformanceMonitor.timelineStream]
 /// 实时展示加载各阶段耗时。
 class FloatingPerformancePanel extends StatefulWidget {
+  /// 全局开关，控制面板是否渲染悬浮卡片。默认禁用。
+  static bool enabled = false;
+
   /// 被包裹的子组件（可选，如果不提供则只显示面板本身）
   final Widget? child;
 
@@ -38,11 +41,14 @@ class FloatingPerformancePanel extends StatefulWidget {
 }
 
 class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
+  /// 当前活跃的面板实例，确保同时只有一个可见
+  static _FloatingPerformancePanelState? _activeInstance;
+
   late Offset _position;
   bool _panelVisible = true;
 
-  /// 所有加载记录
-  final List<LoadingTimeline> _timelines = [];
+  /// 当前最新的加载记录（每个 WebView 只显示一条）
+  LoadingTimeline? _latestTimeline;
 
   StreamSubscription<LoadingTimeline>? _subscription;
 
@@ -50,14 +56,13 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   void initState() {
     super.initState();
     _position = widget.initialOffset;
+    // 隐藏前一个活跃面板，保证只有一个可见
+    _activeInstance?._forceHide();
+    _activeInstance = this;
     _subscription = PerformanceMonitor.instance.timelineStream.listen((tl) {
       if (mounted) {
         setState(() {
-          _timelines.add(tl);
-          // 只保留最近 10 条记录
-          if (_timelines.length > 10) {
-            _timelines.removeAt(0);
-          }
+          _latestTimeline = tl;
         });
       }
     });
@@ -65,8 +70,17 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
 
   @override
   void dispose() {
+    if (_activeInstance == this) {
+      _activeInstance = null;
+    }
     _subscription?.cancel();
     super.dispose();
+  }
+
+  void _forceHide() {
+    if (mounted) {
+      setState(() => _panelVisible = false);
+    }
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -80,6 +94,10 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
 
   @override
   Widget build(BuildContext context) {
+    if (!FloatingPerformancePanel.enabled) {
+      return widget.child ?? const SizedBox.shrink();
+    }
+
     final topPadding = MediaQuery.of(context).padding.top;
 
     final content = Stack(
@@ -154,7 +172,8 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
   }
 
   Widget _buildTimelineList() {
-    if (_timelines.isEmpty) {
+    final tl = _latestTimeline;
+    if (tl == null) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Text(
@@ -164,10 +183,7 @@ class _FloatingPerformancePanelState extends State<FloatingPerformancePanel> {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: _timelines.reversed.map((tl) => _buildTimelineItem(tl)).toList(),
-    );
+    return _buildTimelineItem(tl);
   }
 
   Widget _buildTimelineItem(LoadingTimeline tl) {
