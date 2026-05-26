@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 
 import '../download/default_downloader.dart';
@@ -25,7 +26,7 @@ import 'offline_params.dart';
 /// 持有所有状态并提供对所有子系统的访问：
 /// 配置、回调、下载器、匹配器、拦截器、
 /// 任务管理器、页面管理器和缓存。
-class OfflineWebManager {
+class OfflineWebManager with WidgetsBindingObserver {
   static final OfflineWebManager _instance = OfflineWebManager._internal();
 
   /// 单例实例。
@@ -216,6 +217,8 @@ class OfflineWebManager {
       await server.startForBisName(bisName);
     }
 
+    WidgetsBinding.instance.addObserver(this);
+
     Logger.i(tag, '初始化完成');
   }
 
@@ -307,6 +310,7 @@ class OfflineWebManager {
   ///
   /// 委托给[OfflineTaskManager]。
   Future<void> clean() async {
+    WidgetsBinding.instance.removeObserver(this);
     await _taskManager.clean();
     _curPathCache.clear();
     DefaultMatcher.clearCache();
@@ -320,6 +324,13 @@ class OfflineWebManager {
     await LocalServer.instance.stopForBisName(bisName);
     _curPathCache.remove(bisName);
     DefaultMatcher.removeCurPath(bisName);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      LocalServer.instance.healthCheckAll();
+    }
   }
 
   // --- 私有辅助方法 ---
