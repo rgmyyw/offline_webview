@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>离线包测试页面</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 500px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .icon { font-size: 64px; margin-bottom: 12px; }
+    h1 { font-size: 24px; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .badge {
+      display: inline-block; padding: 6px 16px; border-radius: 20px;
+      font-size: 12px; background: #ff9800; font-weight: 600;
+    }
+    .card {
+      background: rgba(255,255,255,0.15); border-radius: 16px; padding: 20px;
+      backdrop-filter: blur(10px); margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .card-title {
+      font-size: 16px; font-weight: 600; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title span { font-size: 20px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .info-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; }
+    .info-label { font-size: 11px; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .info-value { font-size: 14px; font-weight: 600; word-break: break-all; }
+    .status-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .status-row:last-child { border-bottom: none; }
+    .status-label { font-size: 14px; opacity: 0.8; }
+    .status-value { font-size: 14px; font-weight: 600; }
+    .status-value.success { color: #4caf50; }
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+    .btn {
+      background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+      padding: 12px 16px; color: #fff; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .footer { text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="icon">&#128640;</div>
+      <h1>离线包测试页面</h1>
+      <div class="badge">&#9733; 在线模式</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>&#128197;</span> 离线包信息</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">业务名称</div>
+          <div class="info-value" id="bisName">demo</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">包版本</div>
+          <div class="info-value" id="version">v1.0.0</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">加载方式</div>
+          <div class="info-value">本地服务</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">资源协议</div>
+          <div class="info-value">HTTP</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>&#9881;</span> 资源加载状态</div>
+      <div class="status-row"><span class="status-label">HTML 页面</span><span class="status-value success">&#10004; 已加载</span></div>
+      <div class="status-row"><span class="status-label">CSS 样式</span><span class="status-value success">&#10004; 已加载</span></div>
+      <div class="status-row"><span class="status-label">JS 脚本</span><span class="status-value success">&#10004; 已加载</span></div>
+      <div class="status-row"><span class="status-label">本地资源</span><span class="status-value success">&#10004; 可访问</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>&#128757;</span> 交互测试</div>
+      <div class="btn-group">
+        <button class="btn" onclick="testAlert()">测试弹窗</button>
+        <button class="btn" onclick="testConsole()">测试控制台</button>
+      </div>
+    </div>
+    <div class="footer">加载时间: <span id="loadTime"></span></div>
+  </div>
+  <script>
+    document.getElementById('loadTime').textContent = new Date().toLocaleString('zh-CN');
+    function testAlert() { alert('&#128079; 离线包弹窗功能正常！'); }
+    function testConsole() {
+      console.log('========== 离线包调试信息 ==========');
+      console.log('业务名称:', document.getElementById('bisName').textContent);
+      console.log('页面地址:', window.location.href);
+      console.log('协议:', window.location.protocol);
+      console.log('主机:', window.location.hostname);
+      console.log('端口:', window.location.port || '默认');
+      console.log('用户代理:', navigator.userAgent);
+      console.log('在线状态:', navigator.onLine ? '在线' : '离线');
+      console.log('=====================================');
+      alert('&#128221; 已在控制台输出调试信息\n请打开开发者工具查看');
+    }
+    console.log('&#127919; 离线包测试页面已加载');
+    console.log('&#128640; 当前模式: 离线包（localhost）');
+  </script>
+</body>
+</html>

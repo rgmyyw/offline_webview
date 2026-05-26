@@ -17,4 +17,7 @@ class AppConfig {
 
   /// 服务器基础 URL。
   static String get baseUrl => 'http://$serverHost:$serverPort';
+
+  /// 是否启用 vConsole 调试面板，默认关闭。
+  static bool enableVConsole = true;
 }

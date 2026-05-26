@@ -88,128 +88,208 @@ def _get_zip_path(bis_name):
     return None
 
 
-DEMO_HTML = '''
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>离线包测试页面</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 20px;
-    }
-    .container { max-width: 500px; margin: 0 auto; }
-    .header { text-align: center; margin-bottom: 24px; }
-    .icon { font-size: 64px; margin-bottom: 12px; }
-    h1 { font-size: 24px; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .badge {
-      display: inline-block; padding: 6px 16px; border-radius: 20px;
-      font-size: 12px; background: #ff9800; font-weight: 600;
-    }
-    .card {
-      background: rgba(255,255,255,0.15); border-radius: 16px; padding: 20px;
-      backdrop-filter: blur(10px); margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    .card-title {
-      font-size: 16px; font-weight: 600; margin-bottom: 16px;
-      padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .card-title span { font-size: 20px; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .info-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; }
-    .info-label { font-size: 11px; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .info-value { font-size: 14px; font-weight: 600; word-break: break-all; }
-    .status-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
-    .status-row:last-child { border-bottom: none; }
-    .status-label { font-size: 14px; opacity: 0.8; }
-    .status-value { font-size: 14px; font-weight: 600; }
-    .status-value.success { color: #4caf50; }
-    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-    .btn {
-      background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
-      padding: 12px 16px; color: #fff; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    .footer { text-align: center; margin-top: 20px; font-size: 12px; opacity: 0.6; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="icon">&#128640;</div>
-      <h1>离线包测试页面</h1>
-      <div class="badge">&#9733; 在线模式</div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span>&#128197;</span> 离线包信息</div>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="info-label">业务名称</div>
-          <div class="info-value" id="bisName">demo</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">包版本</div>
-          <div class="info-value" id="version">v1.0.0</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">加载方式</div>
-          <div class="info-value">本地服务</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">资源协议</div>
-          <div class="info-value">HTTP</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span>&#9881;</span> 资源加载状态</div>
-      <div class="status-row"><span class="status-label">HTML 页面</span><span class="status-value success">&#10004; 已加载</span></div>
-      <div class="status-row"><span class="status-label">CSS 样式</span><span class="status-value success">&#10004; 已加载</span></div>
-      <div class="status-row"><span class="status-label">JS 脚本</span><span class="status-value success">&#10004; 已加载</span></div>
-      <div class="status-row"><span class="status-label">本地资源</span><span class="status-value success">&#10004; 可访问</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span>&#128757;</span> 交互测试</div>
-      <div class="btn-group">
-        <button class="btn" onclick="testAlert()">测试弹窗</button>
-        <button class="btn" onclick="testConsole()">测试控制台</button>
-      </div>
-    </div>
-    <div class="footer">加载时间: <span id="loadTime"></span></div>
-  </div>
-  <script>
-    document.getElementById('loadTime').textContent = new Date().toLocaleString('zh-CN');
-    function testAlert() { alert('&#128079; 离线包弹窗功能正常！'); }
-    function testConsole() {
-      console.log('========== 离线包调试信息 ==========');
-      console.log('业务名称:', document.getElementById('bisName').textContent);
-      console.log('页面地址:', window.location.href);
-      console.log('协议:', window.location.protocol);
-      console.log('主机:', window.location.hostname);
-      console.log('端口:', window.location.port || '默认');
-      console.log('用户代理:', navigator.userAgent);
-      console.log('在线状态:', navigator.onLine ? '在线' : '离线');
-      console.log('=====================================');
-      alert('&#128221; 已在控制台输出调试信息\\n请打开开发者工具查看');
-    }
-    console.log('&#127919; 离线包测试页面已加载');
-    console.log('&#128640; 当前模式: 离线包（localhost）');
-  </script>
-</body>
-</html>
-'''
+DEMO_HTML_PATH = os.path.join(SCRIPT_DIR, 'demo.html')
+UPLOAD_HTML_PATH = os.path.join(SCRIPT_DIR, 'upload.html')
+
+def _load_html(path):
+    """从文件加载 HTML 内容。"""
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f'[错误] 文件未找到: {path}')
+        return f'<html><body><h1>File not found</h1></body></html>'
+    except Exception as e:
+        print(f'[错误] 读取文件失败: {e}')
+        return f'<html><body><h1>Error loading file</h1></body></html>'
+
+def _load_demo_html():
+    return _load_html(DEMO_HTML_PATH)
+
+def _load_upload_html():
+    return _load_html(UPLOAD_HTML_PATH)
+
+DEMO_HTML = _load_demo_html()
+UPLOAD_HTML = _load_upload_html()
 
 
 class Handler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        u = urlparse(self.path)
+
+        if u.path == '/upload':
+            content_type = self.headers.get('Content-Type', '')
+            print(f'[Upload] Content-Type: {content_type}')
+
+            if 'multipart/form-data' not in content_type:
+                print('[Upload] 不是 multipart/form-data 格式')
+                body = json.dumps({'error': '需要 multipart/form-data 格式'})
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(body.encode())
+                return
+
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                print(f'[Upload] Content-Length: {content_length}')
+                form_data = self.rfile.read(content_length)
+                print(f'[Upload] 读取到数据长度: {len(form_data)}')
+
+                if 'boundary=' not in content_type:
+                    print('[Upload] boundary 未找到')
+                    body = json.dumps({'error': 'boundary 未找到'})
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(body.encode())
+                    return
+
+                boundary = content_type.split('boundary=')[-1].strip()
+                if boundary.startswith('"') and boundary.endswith('"'):
+                    boundary = boundary[1:-1]
+                boundary = boundary.encode()
+                print(f'[Upload] boundary: {boundary}')
+
+                parts = form_data.split(b'--' + boundary)
+                print(f'[Upload] 分割后 parts 数量: {len(parts)}')
+
+                zip_data = None
+                original_name = None
+
+                for i, part in enumerate(parts):
+                    if b'filename=' in part:
+                        header_end = part.index(b'\r\n\r\n')
+                        header = part[:header_end].decode('utf-8', errors='ignore')
+                        zip_data = part[header_end + 4:]
+                        if zip_data.endswith(b'\r\n'):
+                            zip_data = zip_data[:-2]
+
+                        import re
+                        match = re.search(r'filename="([^"]+)"', header)
+                        if match:
+                            original_name = match.group(1)
+                        break
+
+                print(f'[Upload] 文件名: {original_name}, zip_data 长度: {len(zip_data) if zip_data else 0}')
+
+                if zip_data is None or len(zip_data) == 0:
+                    print('[Upload] 未找到 zip 数据')
+                    body = json.dumps({'error': '未找到 zip 文件'})
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(body.encode())
+                    return
+
+                if not original_name or not original_name.endswith('.zip'):
+                    print(f'[Upload] 不是 zip 文件: {original_name}')
+                    body = json.dumps({'error': '只支持 .zip 文件'})
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(body.encode())
+                    return
+
+                bis_name = original_name[:-4]
+                print(f'[Upload] 处理 bisName: {bis_name}')
+
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    zip_path = os.path.join(tmpdir, original_name)
+                    with open(zip_path, 'wb') as f:
+                        f.write(zip_data)
+
+                    # 检查 zip 内部结构
+                    with zipfile.ZipFile(zip_path, 'r') as zf:
+                        names = zf.namelist()
+
+                    # 检查第一层是否有目录
+                    has_root_folder = False
+                    root_folder_name = None
+                    for name in names:
+                        parts = name.split('/')
+                        if len(parts) > 1 and parts[0]:
+                            has_root_folder = True
+                            root_folder_name = parts[0]
+                            break
+
+                    if has_root_folder:
+                        # zip 内部已有根文件夹，直接解压
+                        extract_dir = os.path.join(tmpdir, root_folder_name)
+                        with zipfile.ZipFile(zip_path, 'r') as zf:
+                            zf.extractall(tmpdir)
+                        print(f'[Upload] 使用 zip 内已有的根文件夹: {root_folder_name}/')
+                    else:
+                        # zip 内部没有根文件夹，需要创建 bis_name/ 文件夹
+                        extract_dir = os.path.join(tmpdir, bis_name)
+                        os.makedirs(extract_dir)
+                        with zipfile.ZipFile(zip_path, 'r') as zf:
+                            for name in names:
+                                # 解压到 bis_name 子文件夹
+                                target_path = os.path.join(extract_dir, name)
+                                if name.endswith('/'):
+                                    os.makedirs(target_path, exist_ok=True)
+                                else:
+                                    os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                                    with open(target_path, 'wb') as out_f:
+                                        out_f.write(zf.read(name))
+                        print(f'[Upload] 创建了 {bis_name}/ 文件夹')
+
+                    offweb = {
+                        'bisName': bis_name,
+                        'version': 'v1.0.0',
+                    }
+                    offweb_path = os.path.join(extract_dir, '.offweb.json')
+                    with open(offweb_path, 'w', encoding='utf-8') as f:
+                        json.dump(offweb, f, ensure_ascii=False, indent=2)
+                    print(f'[Upload] 写入 .offweb.json 成功')
+
+                    output_zip = os.path.join(tmpdir, original_name)
+                    with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zf:
+                        for root, dirs, files in os.walk(extract_dir):
+                            for file in files:
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.relpath(file_path, extract_dir)
+                                zf.write(file_path, arcname)
+                    print(f'[Upload] 重新打包成功')
+
+                    os.makedirs(PACKAGES_DIR, exist_ok=True)
+                    final_path = os.path.join(PACKAGES_DIR, original_name)
+                    import shutil
+                    # 删除已存在的同名 zip
+                    if os.path.exists(final_path):
+                        os.remove(final_path)
+                        print(f'[Upload] 已删除旧的: {final_path}')
+                    shutil.copy2(output_zip, final_path)
+                    print(f'[Upload] 复制到 packages 目录: {final_path}')
+
+                    _scan_packages()
+
+                    body = json.dumps({
+                        'status': 'ok',
+                        'bisName': bis_name,
+                        'message': f'上传成功，已添加到 packages 目录',
+                    })
+                    print(f'[Upload] {bis_name} 上传成功')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(body.encode())
+
+            except Exception as e:
+                import traceback
+                print(f'[Upload] 上传失败: {e}')
+                traceback.print_exc()
+                body = json.dumps({'error': f'上传失败: {e}'})
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(body.encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b'Not found')
+
     def do_GET(self):
         u = urlparse(self.path)
         q = parse_qs(u.query)
@@ -222,8 +302,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     '/': '服务信息',
                     '/health': '健康检查',
                     '/demo': '离线包演示页面',
+                    '/upload-page': '离线包上传页面',
                     '/offweb?bisName=xxx&offlineZipVer=xxx': '查询离线包更新',
                     '/package?bisName=xxx': '下载离线包 zip',
+                    '/upload': '上传离线包 zip',
                 },
             })
             self.send_response(200)
@@ -298,6 +380,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(DEMO_HTML.encode())
 
+        elif u.path == '/upload-page':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(UPLOAD_HTML.encode())
+
         elif u.path == '/health':
             body = json.dumps({
                 'status': 'ok',
@@ -356,8 +444,10 @@ if __name__ == '__main__':
     print(f'  GET /                     - 服务信息')
     print(f'  GET /health               - 健康检查')
     print(f'  GET /demo                 - 离线包演示页面')
+    print(f'  GET /upload-page          - 离线包上传页面')
     print(f'  GET /offweb?bisName=xxx  - 查询离线包更新')
-    print(f'  GET /package?bisName=xxx - 下载离线包 zip')
+    print(f'  GET /package?bisName=xxx  - 下载离线包 zip')
+    print(f'  POST /upload             - 上传离线包 zip')
 
     server = http.server.HTTPServer((HOST, PORT), Handler)
     server.allow_reuse_address = True

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>离线包上传</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 500px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .icon { font-size: 64px; margin-bottom: 12px; }
+    h1 { font-size: 24px; margin-bottom: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .card {
+      background: rgba(255,255,255,0.15); border-radius: 16px; padding: 20px;
+      backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .upload-area {
+      border: 2px dashed rgba(255,255,255,0.4); border-radius: 12px;
+      padding: 48px; text-align: center; cursor: pointer;
+      transition: all 0.3s; background: rgba(255,255,255,0.05);
+    }
+    .upload-area:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); }
+    .upload-area.dragover { border-color: #4caf50; background: rgba(76,175,80,0.2); }
+    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+    .upload-text { font-size: 14px; opacity: 0.8; }
+    .file-info {
+      background: rgba(255,255,255,0.15); border-radius: 8px; padding: 12px;
+      margin-top: 16px; display: none;
+    }
+    .file-info.show { display: block; }
+    .file-name { font-weight: 600; word-break: break-all; margin-bottom: 4px; }
+    .file-size { font-size: 12px; opacity: 0.7; }
+    .btn {
+      width: 100%; background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+      padding: 14px 16px; color: #fff; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; margin-top: 16px;
+    }
+    .btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn.loading { background: rgba(255,255,255,0.1); cursor: wait; }
+    .result {
+      border-radius: 8px; padding: 12px; margin-top: 16px; display: none;
+    }
+    .result.show { display: flex; align-items: center; gap: 12px; }
+    .result.success { background: rgba(76,175,80,0.3); border: 1px solid rgba(76,175,80,0.5); }
+    .result.error { background: rgba(244,67,54,0.3); border: 1px solid rgba(244,67,54,0.5); }
+    .result-icon { font-size: 24px; }
+    .result-text { flex: 1; font-size: 14px; word-break: break-all; }
+    .progress-bar {
+      width: 100%; height: 4px; background: rgba(255,255,255,0.2);
+      border-radius: 2px; margin-top: 12px; overflow: hidden; display: none;
+    }
+    .progress-bar.show { display: block; }
+    .progress-fill { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="icon">&#128229;</div>
+      <h1>离线包上传</h1>
+    </div>
+
+    <div class="card">
+      <div class="upload-area" id="dropZone">
+        <div class="upload-icon">&#128228;</div>
+        <div class="upload-text" id="uploadHint">点击或拖拽 zip 文件到这里</div>
+      </div>
+      <input type="file" id="fileInput" accept=".zip">
+      <div class="file-info" id="fileInfo">
+        <div class="file-name" id="fileName"></div>
+        <div class="file-size" id="fileSize"></div>
+      </div>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="result" id="result">
+        <span class="result-icon" id="resultIcon"></span>
+        <span class="result-text" id="resultText"></span>
+      </div>
+      <button class="btn" id="uploadBtn" disabled onclick="uploadFile()">上传</button>
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const result = document.getElementById('result');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultText = document.getElementById('resultText');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+
+    let selectedFile = null;
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file.name.endsWith('.zip')) {
+        showResult('error', '&#10060; 只支持 .zip 文件');
+        return;
+      }
+      selectedFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = formatSize(file.size);
+      fileInfo.classList.add('show');
+      uploadBtn.disabled = false;
+      result.classList.remove('show');
+      progressBar.classList.remove('show');
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    async function uploadFile() {
+      if (!selectedFile) return;
+
+      uploadBtn.disabled = true;
+      uploadBtn.classList.add('loading');
+      uploadBtn.textContent = '上传中...';
+      result.classList.remove('show');
+      progressBar.classList.add('show');
+      progressFill.style.width = '30%';
+
+      const formData = new FormData();
+      formData.append('file', selectedFile, selectedFile.name);
+
+      try {
+        progressFill.style.width = '60%';
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        progressFill.style.width = '100%';
+
+        const data = await response.json();
+
+        if (response.ok && data.status === 'ok') {
+          showResult('success', '&#10004; ' + data.message);
+          selectedFile = null;
+          fileInfo.classList.remove('show');
+          uploadBtn.disabled = false;
+        } else {
+          showResult('error', '&#10060; ' + (data.error || '上传失败'));
+          uploadBtn.disabled = false;
+        }
+      } catch (e) {
+        showResult('error', '&#10060; 上传失败: ' + e.message);
+        uploadBtn.disabled = false;
+      } finally {
+        uploadBtn.classList.remove('loading');
+        uploadBtn.textContent = '上传';
+        progressBar.classList.remove('show');
+        progressFill.style.width = '0%';
+      }
+    }
+
+    function showResult(type, text) {
+      result.className = 'result show ' + type;
+      resultIcon.innerHTML = type === 'success' ? '&#10004;' : '&#10060;';
+      resultText.innerHTML = text;
+    }
+  </script>
+</body>
+</html>

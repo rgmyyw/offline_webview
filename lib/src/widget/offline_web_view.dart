@@ -21,6 +21,9 @@ class OfflineWebView extends StatefulWidget {
   final PreferredSizeWidget? appBar;
   final void Function(int totalMs)? onLoadTiming;
 
+  /// 是否启用 vConsole 调试面板，默认关闭。
+  final bool enableVConsole;
+
   const OfflineWebView({
     super.key,
     required this.initialUrl,
@@ -30,6 +33,7 @@ class OfflineWebView extends StatefulWidget {
     this.onReceivedError,
     this.appBar,
     this.onLoadTiming,
+    this.enableVConsole = false,
   });
 
   @override
@@ -257,6 +261,26 @@ class _OfflineWebViewState extends State<OfflineWebView> {
     }
   }
 
+  /// 注入 vConsole 调试面板。
+  void _injectVConsole(InAppWebViewController controller) async {
+    try {
+      await controller.evaluateJavascript(source: '''
+        if (!window.__vConsoleInjected) {
+          var script = document.createElement('script');
+          script.src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
+          script.onload = function() {
+            new window.VConsole();
+          };
+          document.head.appendChild(script);
+          window.__vConsoleInjected = true;
+        }
+      ''');
+      Logger.d('OfflineWebView', 'vConsole 注入成功');
+    } catch (e) {
+      Logger.d('OfflineWebView', 'vConsole 注入失败: $e');
+    }
+  }
+
   /// 移除截图覆盖层。iOS 用 AnimatedOpacity 淡出，Android 瞬间移除。
   void _removeScreenshot() {
     if (!_showingScreenshot) return;
@@ -440,6 +464,9 @@ class _OfflineWebViewState extends State<OfflineWebView> {
               if (mounted) _tryRemoveScreenshot();
             });
           }
+        }
+        if (widget.enableVConsole) {
+          _injectVConsole(controller);
         }
         widget.onLoadStop?.call(controller, url);
         PerformanceMonitor.instance.recordLoadComplete(_sw.elapsedMilliseconds);

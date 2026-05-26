@@ -34,6 +34,7 @@ class ParamOfflineDemoPage extends StatelessWidget {
       body: FloatingPerformancePanel(
         child: OfflineWebView(
           initialUrl: _buildUrl(),
+          enableVConsole: AppConfig.enableVConsole,
         ),
       ),
     );

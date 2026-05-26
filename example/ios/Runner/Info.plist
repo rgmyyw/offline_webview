@@ -35,6 +35,10 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>需要访问本地网络以连接离线包测试服务器</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:offline_webview/offline_webview.dart';
+import 'package:offline_webview_example/config.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -42,6 +43,7 @@ class _OfflineWebPageState extends State<_OfflineWebPage> {
       body: OfflineWebView(
         initialUrl: widget.visitUrl,
         controller: _controller,
+        enableVConsole: AppConfig.enableVConsole,
       ),
     );
   }

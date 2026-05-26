@@ -27,6 +27,7 @@ class RuleMatchOfflineDemoPage extends StatelessWidget {
       body: FloatingPerformancePanel(
         child: OfflineWebView(
           initialUrl: _originalUrl,
+          enableVConsole: AppConfig.enableVConsole,
         ),
       ),
     );
