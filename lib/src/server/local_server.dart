@@ -69,6 +69,86 @@ class LocalServer {
     Logger.i('LocalServer', '所有服务器已停止');
   }
 
+  /// 检查所有已注册的服务器健康状态，自动重启死掉的服务器。
+  ///
+  /// 注意：此方法与 startForBisName/stopForBisName 存在理论上的并发竞态
+  /// （Dart 单线程模型下实际风险极低，仅在 await 切换点可能出现）。
+  Future<void> healthCheckAll() async {
+    const tag = 'LocalServer';
+    if (_servers.isEmpty) return;
+
+    final deadEntries = <MapEntry<String, int>>[];
+
+    final client = HttpClient();
+    client.connectionTimeout = const Duration(milliseconds: 500);
+
+    for (final entry in _servers.entries.toList()) {
+      final bisName = entry.key;
+      final port = _ports[bisName];
+      if (port == null) continue;
+
+      try {
+        final request = await client.headUrl(
+          Uri.parse('http://localhost:$port/'),
+        );
+        await request.close();
+      } catch (_) {
+        deadEntries.add(MapEntry(bisName, port));
+      }
+    }
+
+    client.close(force: true);
+
+    if (deadEntries.isEmpty) {
+      Logger.i(tag, '健康检查通过，所有服务器正常');
+      return;
+    }
+
+    Logger.w(tag, '检测到 ${deadEntries.length} 个服务器已死，开始重启');
+
+    for (final entry in deadEntries) {
+      await _restartServer(entry.key, entry.value);
+    }
+  }
+
+  /// 重启指定 bisName 的服务器，保持原端口不变。
+  Future<void> _restartServer(String bisName, int oldPort) async {
+    const tag = 'LocalServer';
+
+    final oldServer = _servers.remove(bisName);
+    if (oldServer != null) {
+      await oldServer.close(force: true);
+    }
+
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      try {
+        final server = await HttpServer.bind(
+          InternetAddress.loopbackIPv4,
+          oldPort,
+        );
+        _servers[bisName] = server;
+        _ports[bisName] = server.port;
+        server.listen(
+          (request) => _handleRequest(request, bisName),
+          onError: (error) {
+            Logger.e(tag, '$bisName 服务器错误: $error');
+          },
+        );
+        Logger.i(tag, '$bisName 服务器重启成功: http://localhost:$oldPort');
+        return;
+      } catch (e) {
+        Logger.w(
+          tag,
+          '$bisName 重启失败 (第$attempt次): $e',
+        );
+      }
+    }
+
+    _ports.remove(bisName);
+    Logger.e(tag, '$bisName 重启彻底失败，已移除');
+  }
+
   /// 获取指定 bisName 的服务器基础 URL。
   ///
   /// 如果该 bisName 没有启动服务器，返回 null。
@@ -126,6 +206,12 @@ class LocalServer {
 
     // 根路由 "/" → 重定向到 index.html
     final filePath = path == '/' ? OfflineFileName.html : path.substring(1);
+
+    if (request.method == 'HEAD') {
+      request.response.statusCode = 200;
+      await request.response.close();
+      return;
+    }
 
     Logger.d(tag, '$bisName GET $path => $filePath');
 
