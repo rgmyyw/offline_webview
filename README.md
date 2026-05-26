@@ -1,4 +1,4 @@
-[简体中文](README_zh.md) | **English**
+[简体中文](https://github.com/rgmyyw/offline_webview/blob/main/README_zh.md) | **English**
 
 ---
 
@@ -9,11 +9,12 @@ A lightweight high-performance Flutter SDK for offline web package loading.
 ## Features
 
 - **Offline Package Management**: Download, cache, and serve web resources locally
-- **URL Matching**: Flexible rule-based URL to bisName matching
+- **URL Matching**: Flexible rule-based URL to bisName matching (param mode & rule mode)
 - **Flow Pipeline**: Extensible chain-of-responsibility processing pipeline
-- **WebView Integration**: Seamless InAppWebView (iOS/Android) integration with preload pool
+- **WebView Integration**: Seamless InAppWebView (iOS/Android) integration with screenshot cache and vConsole
 - **Performance Monitor**: Built-in debug floating panel showing loading timeline comparison
 - **Monitoring & Reporting**: Built-in logging, monitoring, and data reporting
+- **Local Server**: Per-package HTTP server on localhost, serving resources without file:// hacks
 - **Fastlane CI/CD**: One-command build & distribute to Pgyer for iOS/Android
 
 ## Installation
@@ -25,101 +26,62 @@ dependencies:
 
 ## Quick Start
 
+### 1. Start the test server
+
 ```bash
-# 1. Start the Python test server (from the SDK root)
 cd tool
 python3 server.py
 # Server auto-detects LAN IP and runs at http://<your-lan-ip>:18730
 ```
 
+### 2. Initialize the SDK
+
 ```dart
 import 'package:offline_webview/offline_webview.dart';
 
-// Configure the SDK
+// Build config (preDownloadAll downloads all available packages from server)
+final config = OfflineConfigBuilder()
+    .isOpen(true)
+    .preDownloadAll(true)
+    .build();
+
+// Build params
 final params = OfflineParams()
-    .config(OfflineConfigBuilder().isOpen(true).build())
+    .config(config)
     .isDebug(true)
     .logBlock((level, message) => print(message))
     .reportBlock((event, bisName, params) => print('Report: $event'))
     .monitorBlock((type, data) => print('Monitor: $type'))
-    .requestServer(YourCustomRequest());
+    .requestServer(YourRequest());
 
-// Initialize
 await OfflineWebClient.init(params);
-
-// Use in your app
-OfflineWebView(initialUrl: 'https://example.com/page', bisName: 'your-bis-name');
 ```
 
-## Performance Monitor
-
-The SDK includes a debug-mode performance monitor that displays a draggable floating panel showing loading timeline for each page load.
+### 3. Use OfflineWebView
 
 ```dart
-// Option 1: Wrap any page with the panel
-FloatingPerformancePanel(
-  child: MyPageWithWebView(),
+// Param mode: URL contains ?offweb=bisName
+OfflineWebView(
+  initialUrl: 'https://example.com/page?offweb=my-bis-name',
+  enableVConsole: true,  // inject vConsole debug panel
 )
 
-// Option 2: Use standalone (OfflineWebView embeds it internally)
-FloatingPerformancePanel()
+// With controller for reload
+final controller = OfflineWebViewController();
+OfflineWebView(
+  initialUrl: 'https://example.com/page?offweb=my-bis-name',
+  controller: controller,
+  onLoadTiming: (totalMs) => print('Loaded in ${totalMs}ms'),
+)
+
+// Reload offline web
+controller.reloadOfflineWeb();
 ```
 
-The panel subscribes to `PerformanceMonitor.instance.timelineStream` and shows:
-
-| Metric | Description |
-|--------|-------------|
-| `webViewCreatedMs` | Time from widget creation to WebView ready |
-| `firstPaintMs` | Time to first visual paint |
-| `loadCompleteMs` | Time to page fully loaded |
-| `queryMs` | Offline query phase (offline mode only) |
-| `downloadMs` | Package download phase (offline mode only) |
-| `unzipMs` | Package extraction phase (offline mode only) |
-
-Color coding: green (<50ms), blue (<200ms), yellow (<500ms), red (>=500ms).
-
-## Local Development Server
-
-For local testing, a Python HTTP server is provided:
-
-```bash
-cd tool
-python3 server.py
-```
-
-The server auto-detects your LAN IP address so mobile devices on the same network can connect. Place offline packages in `tool/packages/`. The server automatically scans and loads package info from `.offweb.json` inside each zip.
-
-To override the auto-detected IP, set `SERVER_HOST` in `tool/server.py`:
-
-```python
-SERVER_HOST = '192.168.1.100'  # Your fixed LAN IP
-```
-
-**Server endpoints:**
-- `GET /` - Server info & registered packages
-- `GET /health` - Health check
-- `GET /offweb?bisName=xxx&offlineZipVer=xxx` - Query package update
-- `GET /package?bisName=xxx` - Download package zip
-- `GET /demo` - Demo HTML page
-
-## Usage
-
-### Configuration
+### 4. Implement IOfflineRequest
 
 ```dart
-final config = OfflineConfigBuilder()
-    .isOpen(true)                      // Enable/disable offline feature
-    .addPreDownload('bis-name-1')      // Pre-download packages
-    .addPreDownload('bis-name-2')
-    .build();
-```
-
-### Custom Request Implementation
-
-You need to implement `IOfflineRequest` to query your server for package updates:
-
-```dart
-class MyRequest implements IOfflineRequest {
+class YourRequest extends IOfflineRequest {
   @override
   void requestPackageInfo(
     String bisName,
@@ -133,28 +95,158 @@ class MyRequest implements IOfflineRequest {
     final json = jsonDecode(response.body);
     callback.onSuccess(OfflinePackageInfo.fromJson(json));
   }
+
+  @override
+  void requestAllBisNames(RequestCallback<List<String>> callback) async {
+    final response = await http.get(Uri.parse('http://your-server:18730'));
+    final json = jsonDecode(response.body);
+    final packages = (json['packages'] as List).map((e) => e.toString()).toList();
+    callback.onSuccess(packages);
+  }
 }
 ```
 
-Then configure the SDK:
+## Creating Offline Packages
+
+An offline package is a standard `.zip` file containing your web resources and a version manifest.
+
+### Package structure
+
+```
+my-package.zip
+├── .offweb.json      # Required: version manifest
+├── index.html        # Entry point
+├── css/
+│   └── style.css
+├── js/
+│   └── app.js
+└── images/
+    └── logo.png
+```
+
+### Version manifest (`.offweb.json`)
+
+Place this file at the root of the zip:
+
+```json
+{
+  "bisName": "my-package",
+  "version": "v1"
+}
+```
+
+### Requirements
+
+- **`.offweb.json`** must exist at the zip root with `bisName` and `version` fields
+- **`index.html`** must exist as the entry point
+- All resource paths (CSS, JS, images) should use **relative paths**
+- H5 pages must support null-origin for cookie/storage (loaded from `localhost`)
+
+### Upload to server
+
+Place the zip file in the server's `packages/` directory, or use the built-in upload page at `http://<server-ip>:18730/upload`.
+
+### Server query API
+
+When the SDK queries the server, the response format is:
+
+```json
+{
+  "bisName": "my-package",
+  "result": 1,
+  "url": "http://server:18730/package?bisName=my-package",
+  "refreshMode": 0,
+  "version": "v2"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `result` | `-1` = disabled, `0` = same version, `1` = update available |
+| `url` | Download URL for the zip package |
+| `refreshMode` | `0` = normal, `1` = force refresh |
+| `version` | Latest version string |
+
+## URL Matching
+
+### Param mode
+
+Append `?offweb=<bisName>` to the URL. The SDK automatically intercepts it:
+
+```dart
+OfflineWebView(
+  initialUrl: 'https://example.com/page?offweb=my-bis-name',
+)
+```
+
+### Rule mode
+
+Configure `OfflineRuleConfig` to match URLs by host/path patterns without modifying the URL:
 
 ```dart
 final params = OfflineParams()
     .config(OfflineConfigBuilder().isOpen(true).build())
-    .requestServer(MyRequest());
-
-await OfflineWebClient.init(params);
+    .setRule(OfflineRuleConfig(
+      rules: [
+        OfflineRuleItem(host: 'example.com', path: '/app/*', bisName: 'my-app'),
+      ],
+    ))
+    .requestServer(YourRequest());
 ```
 
-### URL Matching Rules
+## Performance Monitor
+
+The SDK includes a debug-mode performance monitor with a draggable floating panel:
 
 ```dart
-final rules = OfflineRuleConfig(
-  rules: [
-    OfflineRuleItem(host: 'example.com', path: '/app/*', bisName: 'my-app'),
-  ],
-);
+FloatingPerformancePanel(
+  child: OfflineWebView(initialUrl: '...'),
+)
+
+// Or standalone (OfflineWebView embeds it internally)
+FloatingPerformancePanel()
 ```
+
+| Metric | Description |
+|--------|-------------|
+| `webViewCreatedMs` | Time from widget creation to WebView ready |
+| `firstPaintMs` | Time to first visual paint |
+| `loadCompleteMs` | Time to page fully loaded |
+| `queryMs` | Offline query phase (offline mode only) |
+| `downloadMs` | Package download phase (offline mode only) |
+| `unzipMs` | Package extraction phase (offline mode only) |
+
+Color coding: green (<50ms), blue (<200ms), yellow (<500ms), red (>=500ms).
+
+## Configuration
+
+```dart
+final config = OfflineConfigBuilder()
+    .isOpen(true)                      // Enable/disable offline feature
+    .preDownloadAll(true)              // Pre-download all packages from server
+    .addPreDownload('bis-name-1')      // Pre-download specific packages
+    .addPreDownload('bis-name-2')
+    .addDisable('bis-name-3')          // Disable specific packages
+    .build();
+```
+
+## Local Development Server
+
+A Python HTTP server is provided for local testing:
+
+```bash
+cd tool
+python3 server.py
+```
+
+**Server endpoints:**
+- `GET /` - Server info & registered packages
+- `GET /health` - Health check
+- `GET /offweb?bisName=xxx&offlineZipVer=xxx` - Query package update
+- `GET /package?bisName=xxx` - Download package zip
+- `GET /upload` - Web upload page
+- `POST /upload` - Upload zip package
+- `GET /demo` - Demo HTML page
 
 ## Architecture
 
@@ -188,14 +280,7 @@ final rules = OfflineRuleConfig(
 
 ## CI/CD with Fastlane
 
-The project includes Fastlane configuration for building and distributing the example app to [Pgyer](https://www.pgyer.com/).
-
-**Prerequisites:**
-- Ruby + Bundler installed
-- Set `PGYER_API_KEY` environment variable
-
 ```bash
-# Install dependencies
 bundle install
 
 # Build & upload iOS

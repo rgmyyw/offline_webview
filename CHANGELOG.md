@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.1.0] - 2025-05-22
+## 1.1.1
+
+- Docs: rewrite README (EN/CN) with offline package creation guide, updated usage examples
+- Docs: fix language-switch links for pub.dev dartdoc compatibility
+- Fix: CHANGELOG.md version format for pub.dev score
+
+## 1.1.0
 
 - Feat: PerformanceMonitor 单例 + LoadingTimeline 数据模型
 - Feat: FloatingPerformancePanel 可拖动悬浮面板，实时展示加载耗时
@@ -12,27 +18,27 @@
 - Fix: LocalServer 日志格式添加 http:// 前缀
 - Chore: 切换 pub 源至 pub.dev
 
-## [1.0.4] - 2025-05-20
+## 1.0.4
 
 - Docs: add Python server setup, endpoints, and IOfflineRequest implementation example
 
-## [1.0.3] - 2025-05-20
+## 1.0.3
 
 - Fix: shorten pubspec description and fix doc comment for pub.dev score
 
-## [1.0.2] - 2025-05-20
+## 1.0.2
 
 - Refactor: unify to Python server, remove Dart local_server
 - Python server auto-scans packages/ directory and reads version from .offweb.json
 - Update port from 8199 to 18730
 
-## [1.0.1] - 2024-05-20
+## 1.0.1
 
 - Improved pub.dev score with English description and README
 - Fixed lint warnings (prefer_final_fields)
 - Updated analysis_options.yaml
 
-## [1.0.0] - 2024-05-20
+## 1.0.0
 
 - Initial release
 - Offline package download and caching
